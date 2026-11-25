@@ -102,6 +102,7 @@ build/
 out/
 .next/
 .rsbuild/
+.netlify/
 # Testing
 coverage/
 *.lcov

@@ -18,7 +18,7 @@ interface AuthSession {
 
 /** 设置登录会话 cookie */
 export function setSessionCookies(response: NextResponse, session: AuthSession): NextResponse {
-  const secure = process.env.COZE_PROJECT_ENV === "PROD";
+  const secure = process.env.NODE_ENV === "production";
   response.cookies.set(ACCESS_COOKIE, session.access_token, {
     httpOnly: true,
     sameSite: "lax",
