@@ -1,7 +1,7 @@
 "$schema" = "https://open-api.netlify.com/netlify.schema.json"
 
 [build]
-command = "pnpm next build --webpack"
+command = "corepack pnpm next build --webpack"
 publish = ".next"
 
 [build.environment]
