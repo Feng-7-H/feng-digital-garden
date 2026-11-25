@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>管理员登录 · 枫</title>
+
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色（苔藓绿：数字花园的生长与沉淀意象） === */
+      --color-primary:              #3F6B50;
+      --color-primary-container:    #DEEBDD;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面（暖纸白书桌） === */
+      --color-background:                 #FAF9F5;
+      --color-surface-container-lowest:   #FFFFFF;
+      --color-surface:                    #FFFFFF;
+      --color-surface-container:          #F1EFE9;
+      --color-surface-container-high:     #EAE7DF;
+      --color-surface-container-highest:  #E0DCD1;
+      /* === 文字（暖墨黑 / 暖灰） === */
+      --color-on-surface:           #26251F;
+      --color-on-surface-variant:   #6E6A5E;
+      /* === 功能色 === */
+      --color-success:  #22c55e;
+      --color-error:    #ef4444;
+      --color-warning:  #f59e0b;
+      /* === 边框 === */
+      --color-outline:          #8A8577;
+      --color-outline-variant:  #C9C5B8;
+      /* === 圆角 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.25rem;
+      --radius-full: 9999px;
+      /* === 阴影（克制柔和，像纸张的轻微浮起） === */
+      --shadow-card:   0 2px 12px rgba(38,37,31,0.08);
+      --shadow-float:  0 10px 30px rgba(38,37,31,0.12);
+      --shadow-dialog: 0 25px 60px rgba(38,37,31,0.22);
+      /* === 字体：标题衬线（书香气质），正文常规 === */
+      --font-sans: "Noto Sans SC", system-ui, sans-serif;
+      --font-serif: "Noto Serif SC", "Noto Sans SC", serif;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+
+  <style>
+    /* 页面专用入场动画 keyframes（非组件类）：水印缓慢浮现 / 内容上浮 / Toast 弹入 */
+    @keyframes wm-in {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes rise-in {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes toast-in {
+      from { opacity: 0; transform: translate(-50%, 10px); }
+      to   { opacity: 1; transform: translate(-50%, 0); }
+    }
+    .anim-wm    { animation: wm-in 2.6s ease-out both; }
+    .anim-rise  { animation: rise-in .8s ease-out both; }
+    .anim-toast { animation: toast-in .3s ease-out both; }
+  </style>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @main-content:start -->
+  <main class="relative w-full min-h-screen overflow-hidden bg-background flex flex-col items-center justify-center px-4 py-12">
+
+    <!-- 背景水印：复用首页「寻找」隶书大字元素（对角错落、极淡透明度、缓慢入场，营造品牌记忆点） -->
+    <div id="watermark" class="absolute inset-0 overflow-hidden pointer-events-none select-none" aria-hidden="true">
+      <span class="anim-wm absolute left-[42%] top-[14%] font-bold text-[9rem] md:text-[13rem] leading-none text-on-surface/[0.04]"
+            style="font-family:'STLiti','LiSu','隶书','Ma Shan Zheng',serif; text-shadow: 1px 2px 0 rgba(255,255,255,.55), -1px -1px 0 rgba(38,37,31,.03);">寻</span>
+      <span class="anim-wm absolute left-[57%] top-[30%] font-bold text-[9rem] md:text-[13rem] leading-none text-primary/[0.05]"
+            style="font-family:'STLiti','LiSu','隶书','Ma Shan Zheng',serif; animation-delay:.3s; text-shadow: 1px 2px 0 rgba(255,255,255,.55), -1px -1px 0 rgba(63,107,80,.04);">找</span>
+    </div>
+
+    <!-- 顶部 Logo 区：衬线「枫」大字 + NOW IS THE TIME 小字（复用首页品牌形态，含苔藓绿方形朱印「楓」），点击返回首页 -->
+    <a id="link-logo" href="home.html" class="anim-rise relative z-10 flex flex-col items-center gap-2.5 group" aria-label="返回首页" style="animation-delay:.1s;">
+      <span class="relative inline-block font-serif font-bold text-4xl leading-none text-on-surface group-hover:text-primary transition-colors">
+        枫
+        <span class="absolute -right-5 -bottom-1.5 inline-flex items-center justify-center w-4 h-4 rounded-[2px] bg-primary text-on-primary text-[9px] font-sans font-bold leading-none" aria-hidden="true">楓</span>
+      </span>
+      <span class="text-[10px] tracking-[0.35em] uppercase text-on-surface-variant">NOW IS THE TIME</span>
+    </a>
+
+    <!-- 登录卡片：居中 max-w-md，浮于水印之上 -->
+    <div class="anim-rise relative z-10 w-full max-w-md mx-auto mt-8" style="animation-delay:.25s;">
+      <div class="bg-surface rounded-xl shadow-dialog p-8">
+
+        <!-- 卡片标题与说明 -->
+        <div class="text-center mb-6">
+          <h1 class="font-serif text-2xl font-bold text-on-surface">管理员登录</h1>
+          <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">仅站长本人可登录管理内容，访客无需登录即可浏览全站</p>
+        </div>
+
+        <form id="login-form" class="space-y-4" novalidate>
+          <!-- 邮箱输入框 -->
+          <div>
+            <label for="input-email" class="block text-xs font-medium text-on-surface-variant mb-1.5">邮箱</label>
+            <input id="input-email" name="email" type="email" autocomplete="email" placeholder="you@example.com"
+                   class="w-full bg-surface-container border-none rounded-md px-3 py-2.5 text-sm text-on-surface
+                          placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" />
+          </div>
+
+          <!-- 密码输入框 + 右侧显隐切换图标 -->
+          <div>
+            <label for="input-password" class="block text-xs font-medium text-on-surface-variant mb-1.5">密码</label>
+            <div class="relative">
+              <input id="input-password" name="password" type="password" autocomplete="current-password" placeholder="请输入密码"
+                     class="w-full bg-surface-container border-none rounded-md px-3 py-2.5 pr-10 text-sm text-on-surface
+                            placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" />
+              <button id="btn-toggle-password" type="button" aria-label="显示密码"
+                      class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-on-surface-variant hover:text-on-surface transition-colors">
+                <i data-lucide="eye" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- 记住我 -->
+          <label for="checkbox-remember" class="flex items-center gap-2 text-sm text-on-surface-variant cursor-pointer select-none w-fit">
+            <input id="checkbox-remember" type="checkbox" class="w-3.5 h-3.5 cursor-pointer accent-primary" />
+            记住我
+          </label>
+
+          <!-- 错误提示示例：默认隐藏，开发阶段登录失败时展示（对接 Supabase Auth 返回的错误信息） -->
+          <p id="login-error" class="hidden text-error text-xs leading-relaxed">邮箱或密码不正确</p>
+
+          <!-- 登录主按钮 -->
+          <button id="btn-login" type="submit"
+                  class="w-full bg-primary text-on-primary py-2.5 rounded-md text-sm font-medium tracking-[0.4em]
+                         hover:opacity-90 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all">
+            登 录
+          </button>
+        </form>
+
+        <!-- 底部链接行 -->
+        <div class="flex items-center justify-center gap-3 mt-6 pt-5 border-t border-outline-variant/20">
+          <a id="link-home" href="home.html" class="text-xs text-on-surface-variant hover:text-primary transition-colors">返回首页</a>
+          <span class="text-outline-variant/50 text-xs" aria-hidden="true">·</span>
+          <a id="link-forgot" href="#" class="text-xs text-on-surface-variant hover:text-primary transition-colors">忘记密码？</a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Toast 提示：登录成功反馈（示意，开发阶段对接 Supabase Auth） -->
+    <div id="toast" class="hidden fixed left-1/2 bottom-14 z-50 anim-toast bg-on-surface/90 text-background px-4 py-2.5 rounded-md shadow-float text-sm">
+      <span class="inline-flex items-center gap-2">
+        <i data-lucide="check-circle" class="w-4 h-4"></i>
+        <span>登录成功，正在进入后台…</span>
+      </span>
+    </div>
+
+  </main>
+  <!-- @main-content:end -->
+
+  <script>
+    $(function () {
+      // 密码显隐切换：eye ↔ eye-off
+      $('#btn-toggle-password').on('click', function () {
+        const $pwd = $('#input-password');
+        const isHidden = $pwd.attr('type') === 'password';
+        $pwd.attr('type', isHidden ? 'text' : 'password');
+        $(this).attr('aria-label', isHidden ? '隐藏密码' : '显示密码');
+        // lucide 图标已被渲染为 svg，切换需重写节点并重建图标
+        $(this).html('<i data-lucide="' + (isHidden ? 'eye-off' : 'eye') + '" class="w-4 h-4"></i>');
+        lucide.createIcons();
+      });
+
+      // 登录提交：demo 不校验账密，直接 Toast + 跳转后台（开发阶段对接 Supabase Auth 邮箱+密码认证，
+      // 认证失败时移除 #login-error 的 hidden 展示错误信息，成功后写入会话再跳转 admin.html）
+      let loggingIn = false;
+      $('#login-form').on('submit', function (e) {
+        e.preventDefault();
+        if (loggingIn) return; // 仅提示 1 次，防止重复触发
+        loggingIn = true;
+        $('#toast').removeClass('hidden');
+        setTimeout(function () {
+          window.location.href = 'admin.html';
+        }, 1500);
+      });
+
+      // 忘记密码 - 事件入口，后续应实现完整重置流程：
+      // 1. 弹出输入邮箱的小弹窗，调用 Supabase Auth resetPasswordForEmail(email) 发送重置邮件
+      // 2. 用户在邮箱中打开重置链接，进入设置新密码页
+      // 3. 校验新密码强度（≥8 位含字母数字）后调用 updateUser 更新密码
+      // 4. 成功后 Toast 提示并引导返回本页登录
+      $('#link-forgot').on('click', function (e) {
+        e.preventDefault();
+        console.log('忘记密码：需对接 Supabase Auth 重置密码流程（发送重置邮件 → 设置新密码）');
+      });
+    });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

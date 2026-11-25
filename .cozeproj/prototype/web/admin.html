@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色（苔藓绿：数字花园的生长与沉淀意象） === */
+      --color-primary:              #3F6B50;
+      --color-primary-container:    #DEEBDD;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面（暖纸白书桌） === */
+      --color-background:                 #FAF9F5;
+      --color-surface-container-lowest:   #FFFFFF;
+      --color-surface:                    #FFFFFF;
+      --color-surface-container:          #F1EFE9;
+      --color-surface-container-high:     #EAE7DF;
+      --color-surface-container-highest:  #E0DCD1;
+      /* === 文字（暖墨黑 / 暖灰） === */
+      --color-on-surface:           #26251F;
+      --color-on-surface-variant:   #6E6A5E;
+      /* === 功能色 === */
+      --color-success:  #22c55e;
+      --color-error:    #ef4444;
+      --color-warning:  #f59e0b;
+      /* === 边框 === */
+      --color-outline:          #8A8577;
+      --color-outline-variant:  #C9C5B8;
+      /* === 圆角 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.25rem;
+      --radius-full: 9999px;
+      /* === 阴影（克制柔和，像纸张的轻微浮起） === */
+      --shadow-card:   0 2px 12px rgba(38,37,31,0.08);
+      --shadow-float:  0 10px 30px rgba(38,37,31,0.12);
+      --shadow-dialog: 0 25px 60px rgba(38,37,31,0.22);
+      /* === 字体：标题衬线（书香气质），正文常规 === */
+      --font-sans: "Noto Sans SC", system-ui, sans-serif;
+      --font-serif: "Noto Serif SC", "Noto Sans SC", serif;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件，不需要的页面则不要复制此段 -->
+  <header class="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-outline-variant/15">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="home.html" class="flex items-baseline gap-3" aria-label="返回首页">
+        <span class="font-serif font-bold text-xl text-on-surface">枫</span>
+        <span class="hidden sm:inline text-[10px] tracking-[0.35em] text-on-surface-variant uppercase">Now is the time</span>
+      </a>
+      <nav class="flex items-center gap-6 sm:gap-8">
+        <a href="home.html" class="text-sm text-on-surface-variant hover:text-on-surface transition-colors">首页</a>
+        <a href="garden.html" class="text-sm text-on-surface-variant hover:text-on-surface transition-colors">数字花园</a>
+        <a href="about.html" class="text-sm text-on-surface-variant hover:text-on-surface transition-colors">关于我</a>
+        <a href="admin.html" aria-current="page" class="text-sm font-semibold text-on-surface transition-colors">后台管理</a>
+      </nav>
+    </div>
+  </header>
+  <!-- @nav:end 导航组件，不需要的页面则不要复制此段 -->
+
+  <main class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-10">
+    <!-- @main-content:start -->
+
+    <!-- 说明：本页所有文字 / 数据均为视觉示意（展示布局与交互效果），开发阶段全部内容由用户在后台录入 -->
+
+    <!-- ============ 区块：页头 ============ -->
+    <section id="admin-header" class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h1 class="font-serif text-3xl font-bold text-on-surface">内容管理</h1>
+        <p class="text-xs text-on-surface-variant mt-1.5">打理花园里的笔记、作品与「关于我」</p>
+      </div>
+      <a href="admin-editor.html" id="btn-new-note" class="bg-primary text-on-primary px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center gap-2">
+        <i data-lucide="plus" class="w-4 h-4"></i>新建笔记
+      </a>
+    </section>
+
+    <!-- ============ 区块：管理对象 Tabs ============ -->
+    <section id="admin-tabs" class="mt-8">
+      <div class="inline-flex items-center gap-1 bg-surface-container rounded-full p-1" role="tablist" aria-label="管理对象切换">
+        <button id="tab-notes" data-panel="notes" role="tab" aria-selected="true" class="admin-tab px-5 py-2 rounded-full text-sm font-medium bg-primary/10 text-primary transition-colors inline-flex items-center gap-1.5">
+          <i data-lucide="file-text" class="w-4 h-4"></i>笔记
+        </button>
+        <button id="tab-works" data-panel="works" role="tab" aria-selected="false" class="admin-tab px-5 py-2 rounded-full text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors inline-flex items-center gap-1.5">
+          <i data-lucide="folder" class="w-4 h-4"></i>作品
+        </button>
+        <button id="tab-profile" data-panel="profile" role="tab" aria-selected="false" class="admin-tab px-5 py-2 rounded-full text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors inline-flex items-center gap-1.5">
+          <i data-lucide="user" class="w-4 h-4"></i>关于我
+        </button>
+        <button id="tab-messages" data-panel="messages" role="tab" aria-selected="false" class="admin-tab px-5 py-2 rounded-full text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors inline-flex items-center gap-1.5">
+          <i data-lucide="message-circle" class="w-4 h-4"></i>留言
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ 区块：笔记管理（默认激活） ============ -->
+    <section id="panel-notes" class="admin-panel mt-6" role="tabpanel" aria-label="笔记管理">
+      <!-- 工具行：状态筛选 pills + 搜索框 -->
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2" role="group" aria-label="状态筛选">
+          <button id="filter-all" data-status="all" class="note-filter px-3.5 py-1.5 rounded-full text-xs font-medium bg-primary text-on-primary transition-colors">全部</button>
+          <button id="filter-draft" data-status="draft" class="note-filter px-3.5 py-1.5 rounded-full text-xs font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors">草稿</button>
+          <button id="filter-published" data-status="published" class="note-filter px-3.5 py-1.5 rounded-full text-xs font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors">已发布</button>
+        </div>
+        <div class="relative">
+          <i data-lucide="search" class="w-4 h-4 text-on-surface-variant/60 absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true"></i>
+          <input id="note-search" type="text" placeholder="搜索笔记标题…" class="w-full sm:w-60 bg-surface-container border-none rounded-md pl-9 pr-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" />
+        </div>
+      </div>
+
+      <!-- 管理列表：卡片式行 × 8（数据硬编码） -->
+      <div id="note-list" class="mt-4 bg-surface rounded-xl shadow-card divide-y divide-outline-variant/30">
+
+        <!-- 笔记列表-笔记1（已发布） -->
+        <div class="note-row flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4 hover:bg-surface-container/40 transition-colors" data-status="published" data-title="慢下来，才看得见苔藓">
+          <div class="flex-1 min-w-[220px]">
+            <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+              <h3 class="font-serif text-base font-semibold text-on-surface">慢下来，才看得见苔藓</h3>
+              <span class="status-badge inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-primary/10 text-primary">已发布</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 mt-1.5">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-container text-primary">生活随笔</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-container text-primary">观察记录</span>
+              <time class="text-xs text-on-surface-variant/80 ml-1">2025-05-20 更新</time>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <a href="admin-editor.html?note_id=n01" class="btn-edit w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="编辑" aria-label="编辑笔记「慢下来，才看得见苔藓」"><i data-lucide="pencil" class="w-4 h-4"></i></a>
+            <button class="btn-toggle-publish w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="撤回为草稿" aria-label="撤回笔记「慢下来，才看得见苔藓」"><i data-lucide="eye-off" class="icon-unpublish w-4 h-4"></i><i data-lucide="eye" class="icon-publish w-4 h-4 hidden"></i></button>
+            <button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors" title="删除" aria-label="删除笔记「慢下来，才看得见苔藓」"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+
+        <!-- 笔记列表-笔记2（草稿） -->
+        <div class="note-row flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4 hover:bg-surface-container/40 transition-colors" data-status="draft" data-title="野草图鉴：认领楼下的十种植物">
+          <div class="flex-1 min-w-[220px]">
+            <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+              <h3 class="font-serif text-base font-semibold text-on-surface">野草图鉴：认领楼下的十种植物</h3>
+              <span class="status-badge inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-surface-container-high text-on-surface-variant">草稿</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 mt-1.5">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-container text-primary">观察记录</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-container text-primary">自然</span>
+              <time class="text-xs text-on-surface-variant/80 ml-1">2025-05-18 更新</time>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <a href="admin-editor.html?note_id=n02" class="btn-edit w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="编辑" aria-label="编辑笔记「野草图鉴：认领楼下的十种植物」"><i data-lucide="pencil" class="w-4 h-4"></i></a>
+            <button class="btn-toggle-publish w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="发布笔记" aria-label="发布笔记「野草图鉴：认领楼下的十种植物」"><i data-lucide="eye-off" class="icon-unpublish w-4 h-4 hidden"></i><i data-lucide="eye" class="icon-publish w-4 h-4"></i></button>
+            <button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors" title="删除" aria-label="删除笔记「野草图鉴：认领楼下的十种植物」"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+
+        <!-- 笔记列表-笔记3（已发布） -->
+        <div class="note-row flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4 hover:bg-surface-container/40 transition-colors" data-status="published" data-title="我的第二大脑只用三层文件夹">
+          <div class="flex-1 min-w-[220px]">
+            <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+              <h3 class="font-serif text-base font-semibold text-on-surface">我的第二大脑只用三层文件夹</h3>
+              <span class="status-badge inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-primary/10 text-primary">已发布</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 mt-1.5">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-container text-primary">知识管理</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-container text-primary">工具</span>
+              <time class="text-xs text-on-surface-variant/80 ml-1">2025-05-08 更新</time>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <a href="admin-editor.html?note_id=n03" class="btn-edit w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="编辑" aria-label="编辑笔记「我的第二大脑只用三层文件夹」"><i data-lucide="pencil" class="w-4 h-4"></i></a>
+            <button class="btn-toggle-publish w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="撤回为草稿" aria-label="撤回笔记「我的第二大脑只用三层文件夹」"><i data-lucide="eye-off" class="icon-unpublish w-4 h-4"></i><i data-lucide="eye" class="icon-publish w-4 h-4 hidden"></i></button>
+            <button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors" title="删除" aria-label="删除笔记「我的第二大脑只用三层文件夹」"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+
+        <!-- 笔记列表-笔记4（已发布） -->
+        <div class="note-row flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4 hover:bg-surface-container/40 transition-colors" data-status="published" data-title="把个人网站当成一座花园来打理">
+          <div class="flex-1 min-w-[220px]">
+            <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+              <h3 class="font-serif text-base font-semibold text-on-surface">把个人网站当成一座花园来打理</h3>
+              <span class="status-badge inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-primary/10 text-primary">已发布</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 mt-1.5">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-container text-primary">数字花园</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-container text-primary">写作</span>
+              <time class="text-xs text-on-surface-variant/80 ml-1">2025-04-22 更新</time>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <a href="admin-editor.html?note_id=n04" class="btn-edit w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="编辑" aria-label="编辑笔记「把个人网站当成一座花园来打理」"><i data-lucide="pencil" class="w-4 h-4"></i></a>
+            <button class="btn-toggle-publish w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="撤回为草稿" aria-label="撤回笔记「把个人网站当成一座花园来打理」"><i data-lucide="eye-off" class="icon-unpublish w-4 h-4"></i><i data-lucide="eye" class="icon-publish w-4 h-4 hidden"></i></button>
+            <button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors" title="删除" aria-label="删除笔记「把个人网站当成一座花园来打理」"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+
+        <!-- 笔记列表-笔记5（草稿） -->
+        <div class="note-row flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4 hover:bg-surface-container/40 transition-colors" data-status="draft" data-title="读《禅与摩托车维修艺术》：良质无法被定义">
+          <div class="flex-1 min-w-[220px]">
+            <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+              <h3 class="font-serif text-base font-semibold text-on-surface">读《禅与摩托车维修艺术》：良质无法被定义</h3>
+              <span class="status-badge inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-surface-container-high text-on-surface-variant">草稿</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 mt-1.5">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-container text-primary">读书笔记</span>
+              <time class="text-xs text-on-surface-variant/80 ml-1">2025-04-10 更新</time>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <a href="admin-editor.html?note_id=n05" class="btn-edit w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="编辑" aria-label="编辑笔记「读《禅与摩托车维修艺术》：良质无法被定义」"><i data-lucide="pencil" class="w-4 h-4"></i></a>
+            <button class="btn-toggle-publish w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="发布笔记" aria-label="发布笔记「读《禅与摩托车维修艺术》：良质无法被定义」"><i data-lucide="eye-off" class="icon-unpublish w-4 h-4 hidden"></i><i data-lucide="eye" class="icon-publish w-4 h-4"></i></button>
+            <button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors" title="删除" aria-label="删除笔记「读《禅与摩托车维修艺术》：良质无法被定义」"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+
+        <!-- 笔记列表-笔记6（已发布） -->
+        <div class="note-row flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4 hover:bg-surface-container/40 transition-colors" data-status="published" data-title="从零搭一个能写十年的个人站">
+          <div class="flex-1 min-w-[220px]">
+            <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+              <h3 class="font-serif text-base font-semibold text-on-surface">从零搭一个能写十年的个人站</h3>
+              <span class="status-badge inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-primary/10 text-primary">已发布</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 mt-1.5">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-container text-primary">建站</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-container text-primary">折腾记录</span>
+              <time class="text-xs text-on-surface-variant/80 ml-1">2025-03-28 更新</time>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <a href="admin-editor.html?note_id=n06" class="btn-edit w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="编辑" aria-label="编辑笔记「从零搭一个能写十年的个人站」"><i data-lucide="pencil" class="w-4 h-4"></i></a>
+            <button class="btn-toggle-publish w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="撤回为草稿" aria-label="撤回笔记「从零搭一个能写十年的个人站」"><i data-lucide="eye-off" class="icon-unpublish w-4 h-4"></i><i data-lucide="eye" class="icon-publish w-4 h-4 hidden"></i></button>
+            <button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors" title="删除" aria-label="删除笔记「从零搭一个能写十年的个人站」"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+
+        <!-- 笔记列表-笔记7（草稿） -->
+        <div class="note-row flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4 hover:bg-surface-container/40 transition-colors" data-status="draft" data-title="晨间散步的十分钟写作练习">
+          <div class="flex-1 min-w-[220px]">
+            <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+              <h3 class="font-serif text-base font-semibold text-on-surface">晨间散步的十分钟写作练习</h3>
+              <span class="status-badge inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-surface-container-high text-on-surface-variant">草稿</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 mt-1.5">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-container text-primary">写作习惯</span>
+              <time class="text-xs text-on-surface-variant/80 ml-1">2025-03-20 更新</time>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <a href="admin-editor.html?note_id=n07" class="btn-edit w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="编辑" aria-label="编辑笔记「晨间散步的十分钟写作练习」"><i data-lucide="pencil" class="w-4 h-4"></i></a>
+            <button class="btn-toggle-publish w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="发布笔记" aria-label="发布笔记「晨间散步的十分钟写作练习」"><i data-lucide="eye-off" class="icon-unpublish w-4 h-4 hidden"></i><i data-lucide="eye" class="icon-publish w-4 h-4"></i></button>
+            <button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors" title="删除" aria-label="删除笔记「晨间散步的十分钟写作练习」"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+
+        <!-- 笔记列表-笔记8（已发布） -->
+        <div class="note-row flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4 hover:bg-surface-container/40 transition-colors" data-status="published" data-title="手冲咖啡实验记录：水温、研磨与一杯好咖啡">
+          <div class="flex-1 min-w-[220px]">
+            <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+              <h3 class="font-serif text-base font-semibold text-on-surface">手冲咖啡实验记录：水温、研磨与一杯好咖啡</h3>
+              <span class="status-badge inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-primary/10 text-primary">已发布</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 mt-1.5">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-container text-primary">生活随笔</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-container text-primary">手冲</span>
+              <time class="text-xs text-on-surface-variant/80 ml-1">2025-03-12 更新</time>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <a href="admin-editor.html?note_id=n08" class="btn-edit w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="编辑" aria-label="编辑笔记「手冲咖啡实验记录：水温、研磨与一杯好咖啡」"><i data-lucide="pencil" class="w-4 h-4"></i></a>
+            <button class="btn-toggle-publish w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="撤回为草稿" aria-label="撤回笔记「手冲咖啡实验记录：水温、研磨与一杯好咖啡」"><i data-lucide="eye-off" class="icon-unpublish w-4 h-4"></i><i data-lucide="eye" class="icon-publish w-4 h-4 hidden"></i></button>
+            <button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors" title="删除" aria-label="删除笔记「手冲咖啡实验记录：水温、研磨与一杯好咖啡」"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 筛选 / 搜索无结果提示（默认隐藏，有内容状态展示） -->
+      <p id="notes-empty" class="hidden text-center text-sm text-on-surface-variant py-10">没有匹配的笔记，换个关键词或筛选条件试试。</p>
+
+      <!-- ============ 区块：作品管理 ============ -->
+      <section id="panel-works" class="admin-panel mt-6 hidden" role="tabpanel" aria-label="作品管理">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <p class="text-xs text-on-surface-variant">共 4 个作品 · 展示于首页精选作品区与「关于我」页</p>
+          <button id="btn-new-work" class="bg-primary text-on-primary px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4"></i>新建作品
+          </button>
+        </div>
+
+        <!-- 作品列表：作品行 × 4（数据硬编码） -->
+        <div id="work-list" class="mt-4 bg-surface rounded-xl shadow-card divide-y divide-outline-variant/30">
+
+          <!-- 作品列表-作品1 -->
+          <div class="work-row flex items-center gap-4 px-5 py-4 hover:bg-surface-container/40 transition-colors" data-title="节气手账" data-link="https://jieqi.example.com" data-cover="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80">
+            <div class="w-24 h-16 rounded-md overflow-hidden shrink-0 bg-surface-container">
+              <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80" alt="清晨田野间翻涌的金色麦浪" data-category="自然风景" class="w-full h-full object-cover" />
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                <h3 class="work-name font-serif text-base font-semibold text-on-surface">节气手账</h3>
+                <a href="https://jieqi.example.com" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-xs text-primary hover:underline"><i data-lucide="link" class="w-3 h-3"></i>jieqi.example.com</a>
+              </div>
+              <p class="work-desc text-sm text-on-surface-variant leading-relaxed mt-1 line-clamp-1">一款跟着二十四节气记录生活的小程序，试着把寻常日子过成页。</p>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button class="btn-edit-work w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="编辑" aria-label="编辑作品「节气手账」"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+              <button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors" title="删除" aria-label="删除作品「节气手账」"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+
+          <!-- 作品列表-作品2 -->
+          <div class="work-row flex items-center gap-4 px-5 py-4 hover:bg-surface-container/40 transition-colors" data-title="墨字排版实验室" data-link="https://mozi-lab.example.com" data-cover="https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&q=80">
+            <div class="w-24 h-16 rounded-md overflow-hidden shrink-0 bg-surface-container">
+              <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&q=80" alt="摊开的笔记本上钢笔写下的手写字迹" data-category="艺术" class="w-full h-full object-cover" />
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                <h3 class="work-name font-serif text-base font-semibold text-on-surface">墨字排版实验室</h3>
+                <a href="https://mozi-lab.example.com" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-xs text-primary hover:underline"><i data-lucide="link" class="w-3 h-3"></i>mozi-lab.example.com</a>
+              </div>
+              <p class="work-desc text-sm text-on-surface-variant leading-relaxed mt-1 line-clamp-1">关于中文排版的交互实验集，试着让每一个方块字好好呼吸。</p>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button class="btn-edit-work w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="编辑" aria-label="编辑作品「墨字排版实验室」"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+              <button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors" title="删除" aria-label="删除作品「墨字排版实验室」"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+
+          <!-- 作品列表-作品3 -->
+          <div class="work-row flex items-center gap-4 px-5 py-4 hover:bg-surface-container/40 transition-colors" data-title="山径地图集" data-link="https://trails.example.com" data-cover="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80">
+            <div class="w-24 h-16 rounded-md overflow-hidden shrink-0 bg-surface-container">
+              <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80" alt="云雾缭绕的连绵山脉与山间小径" data-category="自然风景" class="w-full h-full object-cover" />
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                <h3 class="work-name font-serif text-base font-semibold text-on-surface">山径地图集</h3>
+                <a href="https://trails.example.com" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-xs text-primary hover:underline"><i data-lucide="link" class="w-3 h-3"></i>trails.example.com</a>
+              </div>
+              <p class="work-desc text-sm text-on-surface-variant leading-relaxed mt-1 line-clamp-1">为走过的徒步路线建立的数字笔记，记下标高、溪流与一杯热茶。</p>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button class="btn-edit-work w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="编辑" aria-label="编辑作品「山径地图集」"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+              <button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors" title="删除" aria-label="删除作品「山径地图集」"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+
+          <!-- 作品列表-作品4（暂未上线，无链接） -->
+          <div class="work-row flex items-center gap-4 px-5 py-4 hover:bg-surface-container/40 transition-colors" data-title="植物图鉴小程序" data-link="" data-cover="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80">
+            <div class="w-24 h-16 rounded-md overflow-hidden shrink-0 bg-surface-container">
+              <img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80" alt="窗台边摆着的几盆绿植盆栽" data-category="自然风景" class="w-full h-full object-cover" />
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                <h3 class="work-name font-serif text-base font-semibold text-on-surface">植物图鉴小程序</h3>
+                <span class="inline-flex items-center gap-1 text-xs text-on-surface-variant/60"><i data-lucide="link" class="w-3 h-3"></i>暂未上线</span>
+              </div>
+              <p class="work-desc text-sm text-on-surface-variant leading-relaxed mt-1 line-clamp-1">记录身边花草的拍照识别小程序，附浇水提醒，还在慢慢打磨。</p>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button class="btn-edit-work w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="编辑" aria-label="编辑作品「植物图鉴小程序」"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+              <button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors" title="删除" aria-label="删除作品「植物图鉴小程序」"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============ 区块：关于我编辑 ============ -->
+      <section id="panel-profile" class="admin-panel mt-6 hidden" role="tabpanel" aria-label="关于我编辑">
+        <div class="bg-surface rounded-xl shadow-card p-6 sm:p-8 max-w-3xl">
+          <p class="text-xs text-on-surface-variant">编辑「关于我」页的展示内容 · 仅站长本人可编辑，前台访客只读 · 所有文字均为视觉示意，开发阶段由用户录入</p>
+
+          <div class="space-y-6 mt-6">
+            <!-- 头像上传：开发阶段上传至对象存储（Supabase Storage），前台「关于我」页展示，可随时替换 -->
+            <div class="flex items-center gap-5">
+              <img id="profile-avatar-preview" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80" alt="头像预览：站长的个人头像照片" data-category="人物"
+                   class="w-20 h-20 rounded-full object-cover shadow-card" />
+              <div>
+                <label class="block text-sm font-medium text-on-surface">头像</label>
+                <div class="mt-1.5 flex items-center gap-2">
+                  <button id="avatar-upload-btn" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary/10 text-primary text-sm font-medium hover:bg-primary/15 transition-colors">
+                    <i data-lucide="upload" class="w-3.5 h-3.5"></i>上传头像
+                  </button>
+                  <span class="text-xs text-on-surface-variant/70">支持 jpg / png，上传后可随时替换</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-6">
+              <div>
+                <label for="profile-nickname" class="block text-sm font-medium text-on-surface">昵称</label>
+                <input id="profile-nickname" type="text" value="枫" placeholder="你的昵称" class="mt-1.5 w-full bg-surface-container border-none rounded-md px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" />
+              </div>
+              <div>
+                <label for="profile-title" class="block text-sm font-medium text-on-surface">头衔</label>
+                <input id="profile-title" type="text" value="前端工程师 · 数字园丁" placeholder="一句话介绍你的身份" class="mt-1.5 w-full bg-surface-container border-none rounded-md px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" />
+              </div>
+            </div>
+
+            <div>
+              <label for="profile-bio" class="block text-sm font-medium text-on-surface">个人简介</label>
+              <textarea id="profile-bio" rows="5" placeholder="写一段介绍自己的文字…" class="mt-1.5 w-full bg-surface-container border-none rounded-md px-3 py-2 text-sm leading-relaxed text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors resize-none">喜欢写字的前端工程师。这里种着我读过的书、写下的字与做过的东西——它们像植物一样缓慢生长，也欢迎你来浇灌两句。</textarea>
+            </div>
+
+            <div>
+              <label for="profile-skill-input" class="block text-sm font-medium text-on-surface">技能标签</label>
+              <div id="skill-chips" class="flex flex-wrap items-center gap-2 mt-2">
+                <!-- 技能标签-技能1 -->
+                <span class="skill-chip inline-flex items-center gap-1 pl-3 pr-1.5 py-1 rounded-full text-xs font-medium bg-primary-container text-primary"><span class="skill-chip-name">前端开发</span><button class="skill-chip-remove w-4 h-4 inline-flex items-center justify-center rounded-full hover:bg-primary/15 transition-colors" aria-label="移除「前端开发」"><i data-lucide="x" class="w-3 h-3"></i></button></span>
+                <!-- 技能标签-技能2 -->
+                <span class="skill-chip inline-flex items-center gap-1 pl-3 pr-1.5 py-1 rounded-full text-xs font-medium bg-primary-container text-primary"><span class="skill-chip-name">写作</span><button class="skill-chip-remove w-4 h-4 inline-flex items-center justify-center rounded-full hover:bg-primary/15 transition-colors" aria-label="移除「写作」"><i data-lucide="x" class="w-3 h-3"></i></button></span>
+                <!-- 技能标签-技能3 -->
+                <span class="skill-chip inline-flex items-center gap-1 pl-3 pr-1.5 py-1 rounded-full text-xs font-medium bg-primary-container text-primary"><span class="skill-chip-name">摄影</span><button class="skill-chip-remove w-4 h-4 inline-flex items-center justify-center rounded-full hover:bg-primary/15 transition-colors" aria-label="移除「摄影」"><i data-lucide="x" class="w-3 h-3"></i></button></span>
+                <!-- 技能标签-技能4 -->
+                <span class="skill-chip inline-flex items-center gap-1 pl-3 pr-1.5 py-1 rounded-full text-xs font-medium bg-primary-container text-primary"><span class="skill-chip-name">园艺</span><button class="skill-chip-remove w-4 h-4 inline-flex items-center justify-center rounded-full hover:bg-primary/15 transition-colors" aria-label="移除「园艺」"><i data-lucide="x" class="w-3 h-3"></i></button></span>
+                <!-- 技能标签-技能5 -->
+                <span class="skill-chip inline-flex items-center gap-1 pl-3 pr-1.5 py-1 rounded-full text-xs font-medium bg-primary-container text-primary"><span class="skill-chip-name">数字花园</span><button class="skill-chip-remove w-4 h-4 inline-flex items-center justify-center rounded-full hover:bg-primary/15 transition-colors" aria-label="移除「数字花园」"><i data-lucide="x" class="w-3 h-3"></i></button></span>
+              </div>
+              <div class="flex items-center gap-2 mt-3">
+                <input id="profile-skill-input" type="text" placeholder="输入新技能，回车或点击添加" class="flex-1 bg-surface-container border-none rounded-md px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" />
+                <button id="btn-add-skill" class="bg-surface-container text-on-surface border-none px-4 py-2 rounded-md text-sm font-medium hover:bg-surface-container-high active:scale-[0.98] transition-all inline-flex items-center gap-1.5"><i data-lucide="plus" class="w-3.5 h-3.5"></i>添加</button>
+              </div>
+            </div>
+
+            <div>
+              <label for="profile-contact" class="block text-sm font-medium text-on-surface">联系方式</label>
+              <input id="profile-contact" type="text" value="hi@yiyu-garden.example" placeholder="邮箱或其他联系方式" class="mt-1.5 w-full bg-surface-container border-none rounded-md px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" />
+              <p class="text-xs text-on-surface-variant/70 mt-1.5">将展示在首页 Hero 区与「关于我」页，前台点击可复制。</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-end gap-3 mt-8 pt-6 border-t border-outline-variant/15">
+            <p class="text-xs text-on-surface-variant mr-auto">保存后立即生效于前台页面</p>
+            <button id="btn-save-profile" class="bg-primary text-on-primary px-5 py-2 rounded-md text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center gap-2"><i data-lucide="check" class="w-4 h-4"></i>保存</button>
+          </div>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- ============ 区块：留言管理（数字花园留言板，访客可见、仅站长可删） ============ -->
+    <section id="panel-messages" class="admin-panel mt-6 hidden" role="tabpanel" aria-label="留言管理">
+      <div class="flex items-center justify-between">
+        <p class="text-sm text-on-surface-variant">访客在「数字花园」留言板留下的想法 · 共 <span id="admin-msg-count" class="text-on-surface font-medium">4</span> 条记录（含 <span class="text-on-surface font-medium">1</span> 条已删除）</p>
+        <p class="text-xs text-on-surface-variant/70">软删除记录仅站长可见；删除后不可恢复</p>
+      </div>
+
+      <!-- 留言列表（示意数据，开发阶段从 messages 表读取） -->
+      <ul id="admin-msg-list" class="mt-4 space-y-3">
+        <!-- 留言-1 -->
+        <li class="msg-row bg-surface rounded-xl shadow-card p-5" data-title="林间拾光的留言">
+          <div class="flex items-start gap-3">
+            <span class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-serif text-sm font-bold shrink-0">林</span>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <p class="text-sm font-medium text-on-surface">林间拾光</p>
+                <span class="text-xs text-on-surface-variant/70">2025-05-12 21:34</span>
+              </div>
+              <p class="mt-1.5 text-sm leading-relaxed text-on-surface-variant">“趁年轻去做有意义的事”——这句话放在首页太合适了，每次来都能被打一次气。</p>
+            </div>
+            <button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant/60 hover:text-error hover:bg-error/10 transition-colors shrink-0" aria-label="删除留言">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </li>
+        <!-- 留言-2 -->
+        <li class="msg-row bg-surface rounded-xl shadow-card p-5" data-title="Aaron 的留言">
+          <div class="flex items-start gap-3">
+            <span class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-serif text-sm font-bold shrink-0">A</span>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <p class="text-sm font-medium text-on-surface">Aaron</p>
+                <span class="text-xs text-on-surface-variant/70">2025-05-06 14:02</span>
+              </div>
+              <p class="mt-1.5 text-sm leading-relaxed text-on-surface-variant">卡片盒笔记法那篇写得很清楚，请问后续会写双链笔记工具对比吗？蹲一个。</p>
+            </div>
+            <button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant/60 hover:text-error hover:bg-error/10 transition-colors shrink-0" aria-label="删除留言">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </li>
+        <!-- 留言-3 -->
+        <li class="msg-row bg-surface rounded-xl shadow-card p-5" data-title="屿风 的留言">
+          <div class="flex items-start gap-3">
+            <span class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-serif text-sm font-bold shrink-0">屿</span>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <p class="text-sm font-medium text-on-surface">屿风</p>
+                <span class="text-xs text-on-surface-variant/70">2025-04-28 09:47</span>
+              </div>
+              <p class="mt-1.5 text-sm leading-relaxed text-on-surface-variant">背景里的「寻找」两个字太妙了，找着找着，花园就长出来了。</p>
+            </div>
+            <button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant/60 hover:text-error hover:bg-error/10 transition-colors shrink-0" aria-label="删除留言">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </li>
+        <!-- 留言-4：软删除记录（访客在 30 分钟内自行删除，前台不再展示，站长可查看内容，仅站长可彻底清除） -->
+        <li class="msg-row bg-surface-container/40 rounded-xl p-5 opacity-80" data-title="Wendy 的留言">
+          <div class="flex items-start gap-3">
+            <span class="w-9 h-9 rounded-full bg-surface-container-high text-on-surface-variant/50 flex items-center justify-center font-serif text-sm font-bold shrink-0">W</span>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <p class="text-sm font-medium text-on-surface-variant/70">Wendy</p>
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-error/10 text-error">已删除</span>
+                <span class="text-xs text-on-surface-variant/50">访客于 30 分钟内自行删除 · 2025-06-15 14:52</span>
+              </div>
+              <p class="mt-1.5 text-sm leading-relaxed text-on-surface-variant/60">这篇笔记刚好解决了我纠结两周的问题，感谢分享！（该内容仅站长可见）</p>
+            </div>
+            <button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant/60 hover:text-error hover:bg-error/10 transition-colors shrink-0" aria-label="彻底删除">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </li>
+      </ul>
+
+      <!-- 留言空态：无任何留言时显示（开发阶段根据接口返回的空列表切换显隐） -->
+      <div id="admin-msg-empty" class="hidden flex-col items-center justify-center text-center bg-surface rounded-xl shadow-card px-6 py-12">
+        <i data-lucide="message-circle-heart" class="w-8 h-8 text-primary/40"></i>
+        <p class="mt-4 text-sm text-on-surface-variant">欢迎留下您宝贵的经验分享~</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ 弹窗：确认删除（笔记 / 作品通用） ============ -->
+  <div id="modal-confirm-delete" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+    <div class="bg-surface rounded-xl shadow-dialog max-w-sm w-full p-6" role="dialog" aria-modal="true" aria-labelledby="confirm-delete-title">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center shrink-0">
+          <i data-lucide="trash-2" class="w-5 h-5 text-error"></i>
+        </div>
+        <div>
+          <h3 id="confirm-delete-title" class="font-serif text-lg font-bold text-on-surface">确认删除</h3>
+          <p class="text-sm text-on-surface-variant leading-relaxed mt-1.5">将删除「<span id="delete-target-name" class="text-on-surface font-medium">慢下来，才看得见苔藓</span>」，此操作不可恢复。</p>
+        </div>
+      </div>
+      <div class="flex justify-end gap-3 mt-6">
+        <button id="btn-cancel-delete" class="bg-surface-container text-on-surface border-none px-4 py-2 rounded-md text-sm font-medium hover:bg-surface-container-high active:scale-[0.98] transition-all">取消</button>
+        <button id="btn-confirm-delete" class="bg-error text-white px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all">确认删除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 弹窗：新建 / 编辑作品表单 ============ -->
+  <div id="modal-work-form" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+    <div class="bg-surface rounded-xl shadow-dialog max-w-md w-full max-h-[90vh] overflow-y-auto p-6" role="dialog" aria-modal="true" aria-labelledby="work-form-title">
+      <div class="flex items-center justify-between">
+        <h3 id="work-form-title" class="font-serif text-lg font-bold text-on-surface">新建作品</h3>
+        <button id="btn-close-work-form" class="w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" aria-label="关闭弹窗"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+
+      <div class="space-y-4 mt-5">
+        <div>
+          <label for="work-input-title" class="block text-sm font-medium text-on-surface">作品标题</label>
+          <input id="work-input-title" type="text" placeholder="例如：节气手账" class="mt-1.5 w-full bg-surface-container border-none rounded-md px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" />
+        </div>
+        <div>
+          <label for="work-input-desc" class="block text-sm font-medium text-on-surface">作品描述</label>
+          <textarea id="work-input-desc" rows="3" placeholder="一句话介绍这个作品…" class="mt-1.5 w-full bg-surface-container border-none rounded-md px-3 py-2 text-sm leading-relaxed text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors resize-none"></textarea>
+        </div>
+        <div>
+          <label for="work-input-link" class="block text-sm font-medium text-on-surface">作品链接</label>
+          <input id="work-input-link" type="url" placeholder="https://…（留空表示暂未上线）" class="mt-1.5 w-full bg-surface-container border-none rounded-md px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" />
+        </div>
+        <div>
+          <label for="work-input-cover" class="block text-sm font-medium text-on-surface">封面地址</label>
+          <input id="work-input-cover" type="url" placeholder="https://…（图片链接）" class="mt-1.5 w-full bg-surface-container border-none rounded-md px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" />
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-outline-variant/15">
+        <button id="btn-cancel-work" class="bg-surface-container text-on-surface border-none px-4 py-2 rounded-md text-sm font-medium hover:bg-surface-container-high active:scale-[0.98] transition-all">取消</button>
+        <button id="btn-save-work" class="bg-primary text-on-primary px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center gap-2"><i data-lucide="check" class="w-4 h-4"></i>保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Toast 提示 ============ -->
+  <div id="toast" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] bg-surface text-on-surface border border-outline-variant/15 shadow-float px-4 py-2.5 rounded-full text-sm inline-flex items-center gap-2" role="status" aria-live="polite">
+    <i data-lucide="check" class="w-4 h-4 text-primary"></i>
+    <span id="toast-text">已保存</span>
+  </div>
+
+  <!-- ============ 页脚（与全站一致） ============ -->
+  <footer id="site-footer" class="border-t border-outline-variant/15 bg-surface">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <i data-lucide="sprout" class="w-4 h-4 text-primary"></i>
+        <span class="font-serif font-bold text-sm text-on-surface">枫</span>
+        <span class="text-xs text-on-surface-variant ml-2">© 2025 枫 · NOW IS THE TIME</span>
+      </div>
+      <div id="footer-social" class="flex items-center gap-2">
+        <a href="mailto:hi@yiyu-garden.example" class="social-link w-8 h-8 inline-flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" aria-label="发邮件给我">
+          <i data-lucide="mail" class="w-4 h-4"></i>
+        </a>
+        <a href="#" data-social="GitHub" class="social-link w-8 h-8 inline-flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" aria-label="GitHub 主页">
+          <i data-lucide="github" class="w-4 h-4"></i>
+        </a>
+        <a href="#" data-social="RSS" class="social-link w-8 h-8 inline-flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" aria-label="RSS 订阅">
+          <i data-lucide="rss" class="w-4 h-4"></i>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ===== 后台管理页交互（页面数据均为视觉示意，开发阶段由用户在后台录入） =====
+    $(function () {
+
+      // ---------- 通用：Toast 提示 ----------
+      var toastTimer = null;
+      function showToast(msg) {
+        $('#toast-text').text(msg);
+        $('#toast').removeClass('hidden');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { $('#toast').addClass('hidden'); }, 2000);
+      }
+
+      // ---------- 通用：弹窗开关 ----------
+      function openModal(sel) { $(sel).removeClass('hidden'); }
+      function closeModal(sel) { $(sel).addClass('hidden'); }
+
+      // 点击遮罩空白处关闭弹窗
+      $('#modal-confirm-delete, #modal-work-form').on('click', function (e) {
+        if (e.target === this) { $(this).addClass('hidden'); }
+      });
+
+      // ---------- 管理对象 Tabs：切换笔记 / 作品 / 关于我 ----------
+      function switchTab(key) {
+        // 非激活态：浅底灰字；激活态：bg-primary/10 + text-primary（segmented 样式）
+        $('.admin-tab').removeClass('bg-primary/10 text-primary')
+                       .addClass('text-on-surface-variant hover:text-on-surface')
+                       .attr('aria-selected', 'false');
+        $('#tab-' + key).addClass('bg-primary/10 text-primary')
+                        .removeClass('text-on-surface-variant hover:text-on-surface')
+                        .attr('aria-selected', 'true');
+        $('.admin-panel').addClass('hidden');
+        $('#panel-' + key).removeClass('hidden');
+      }
+      $('.admin-tab').on('click', function () { switchTab($(this).data('panel')); });
+
+      // ---------- 笔记 Tab：状态筛选 pills + 搜索框过滤 ----------
+      var currentFilter = 'all';
+
+      function applyNoteFilter() {
+        // 状态筛选与搜索关键词叠加生效
+        var keyword = $('#note-search').val().trim().toLowerCase();
+        var visible = 0;
+        $('#note-list .note-row').each(function () {
+          var $row = $(this);
+          var okStatus = currentFilter === 'all' || $row.attr('data-status') === currentFilter;
+          var okSearch = !keyword || ($row.attr('data-title') || '').toLowerCase().indexOf(keyword) > -1;
+          var show = okStatus && okSearch;
+          $row.toggleClass('hidden', !show);
+          if (show) { visible++; }
+        });
+        // 无结果时展示空态提示
+        $('#notes-empty').toggleClass('hidden', visible > 0);
+      }
+
+      function setFilterBtn(key) {
+        // 激活态：bg-primary text-on-primary；非激活态：bg-surface-container 灰字
+        $('.note-filter').removeClass('bg-primary text-on-primary')
+                         .addClass('bg-surface-container text-on-surface-variant hover:bg-surface-container-high');
+        $('#filter-' + key).addClass('bg-primary text-on-primary')
+                           .removeClass('bg-surface-container text-on-surface-variant hover:bg-surface-container-high');
+      }
+
+      $('.note-filter').on('click', function () {
+        currentFilter = $(this).data('status');
+        setFilterBtn(currentFilter);
+        applyNoteFilter();
+      });
+
+      // 搜索：300ms 防抖，实时过滤标题
+      var searchTimer = null;
+      $('#note-search').on('input', function () {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(applyNoteFilter, 300);
+      });
+
+      // ---------- 笔记 Tab：发布 / 撤回切换 ----------
+      $('#note-list').on('click', '.btn-toggle-publish', function () {
+        var $row = $(this).closest('.note-row');
+        var $badge = $row.find('.status-badge');
+        if ($row.attr('data-status') === 'published') {
+          // 已发布 → 撤回为草稿
+          $row.attr('data-status', 'draft');
+          $badge.text('草稿')
+                .removeClass('bg-primary/10 text-primary')
+                .addClass('bg-surface-container-high text-on-surface-variant');
+          $(this).attr('title', '发布笔记');
+          showToast('已撤回为草稿');
+        } else {
+          // 草稿 → 发布
+          $row.attr('data-status', 'published');
+          $badge.text('已发布')
+                .removeClass('bg-surface-container-high text-on-surface-variant')
+                .addClass('bg-primary/10 text-primary');
+          $(this).attr('title', '撤回为草稿');
+          showToast('已发布');
+        }
+        // eye / eye-off 双图标切换（lucide 渲染为 svg 后无法改属性，故用 hidden 切换）
+        $(this).find('.icon-publish, .icon-unpublish').toggleClass('hidden');
+        // 切换后按当前筛选条件重新过滤（如"草稿"视图下发布该行则隐藏）
+        applyNoteFilter();
+      });
+
+      // ---------- 删除确认弹窗（笔记 / 作品行通用） ----------
+      var $deleteTarget = null;
+
+      $('#note-list, #work-list, #admin-msg-list').on('click', '.btn-delete', function () {
+        $deleteTarget = $(this).closest('.note-row, .work-row, .msg-row');
+        $('#delete-target-name').text($deleteTarget.attr('data-title') || '');
+        openModal('#modal-confirm-delete');
+      });
+
+      $('#btn-cancel-delete').on('click', function () { closeModal('#modal-confirm-delete'); });
+
+      $('#btn-confirm-delete').on('click', function () {
+        // 实际开发中应调用 DELETE 接口删除数据后刷新列表；原型阶段直接移除该行节点
+        if ($deleteTarget) { $deleteTarget.remove(); $deleteTarget = null; }
+        closeModal('#modal-confirm-delete');
+        showToast('已删除');
+        applyNoteFilter();
+      });
+
+      // ---------- 作品 Tab：新建 / 编辑弹窗 ----------
+      var $editWorkRow = null;
+
+      function clearWorkForm() {
+        $('#work-input-title').val('');
+        $('#work-input-desc').val('');
+        $('#work-input-link').val('');
+        $('#work-input-cover').val('');
+      }
+
+      // 新建作品：清空表单后打开弹窗
+      $('#btn-new-work').on('click', function () {
+        $editWorkRow = null;
+        $('#work-form-title').text('新建作品');
+        clearWorkForm();
+        openModal('#modal-work-form');
+      });
+
+      // 编辑作品：预填当前行数据后打开弹窗
+      $('#work-list').on('click', '.btn-edit-work', function () {
+        $editWorkRow = $(this).closest('.work-row');
+        $('#work-form-title').text('编辑作品');
+        $('#work-input-title').val($editWorkRow.find('.work-name').text());
+        $('#work-input-desc').val($editWorkRow.find('.work-desc').text());
+        $('#work-input-link').val($editWorkRow.attr('data-link') || '');
+        $('#work-input-cover').val($editWorkRow.attr('data-cover') || '');
+        openModal('#modal-work-form');
+      });
+
+      $('#btn-cancel-work').on('click', function () { closeModal('#modal-work-form'); });
+      $('#btn-close-work-form').on('click', function () { closeModal('#modal-work-form'); });
+
+      // 保存作品
+      $('#btn-save-work').on('click', function () {
+        var title = $.trim($('#work-input-title').val());
+        if (!title) { $('#work-input-title').trigger('focus'); return; }
+        if ($editWorkRow) {
+          // 编辑：把表单值写回当前行（实际开发中应调用更新接口）
+          $editWorkRow.find('.work-name').text(title);
+          $editWorkRow.find('.work-desc').text($('#work-input-desc').val());
+          $editWorkRow.attr('data-title', title);
+          $editWorkRow.attr('data-link', $.trim($('#work-input-link').val()));
+          $editWorkRow.attr('data-cover', $.trim($('#work-input-cover').val()));
+        } else {
+          // 新建：实际开发中应 POST /api/works 后刷新列表；原型阶段在列表顶部插入一行示意
+          // 完整行为：1. 校验必填项（标题） 2. 上传封面并创建记录 3. 插入新行（事件委托已覆盖新节点）
+          var cover = $.trim($('#work-input-cover').val()) || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80';
+          var link = $.trim($('#work-input-link').val());
+          var linkHtml = link
+            ? '<a href="' + link + '" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-xs text-primary hover:underline"><i data-lucide="link" class="w-3 h-3"></i>' + link.replace(/^https?:\/\//, '') + '</a>'
+            : '<span class="inline-flex items-center gap-1 text-xs text-on-surface-variant/60"><i data-lucide="link" class="w-3 h-3"></i>暂未上线</span>';
+          var $newRow = $(
+            '<div class="work-row flex items-center gap-4 px-5 py-4 hover:bg-surface-container/40 transition-colors" data-title="' + title + '" data-link="' + link + '" data-cover="' + cover + '">' +
+              '<div class="w-24 h-16 rounded-md overflow-hidden shrink-0 bg-surface-container">' +
+                '<img src="' + cover + '" alt="作品封面图" data-category="其他" class="w-full h-full object-cover" />' +
+              '</div>' +
+              '<div class="flex-1 min-w-0">' +
+                '<div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">' +
+                  '<h3 class="work-name font-serif text-base font-semibold text-on-surface">' + title + '</h3>' + linkHtml +
+                '</div>' +
+                '<p class="work-desc text-sm text-on-surface-variant leading-relaxed mt-1 line-clamp-1">' + ($('#work-input-desc').val() || '暂无描述') + '</p>' +
+              '</div>' +
+              '<div class="flex items-center gap-1 shrink-0">' +
+                '<button class="btn-edit-work w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-primary hover:bg-primary-container transition-colors" title="编辑" aria-label="编辑作品「' + title + '」"><i data-lucide="pencil" class="w-4 h-4"></i></button>' +
+                '<button class="btn-delete w-8 h-8 inline-flex items-center justify-center rounded-md text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors" title="删除" aria-label="删除作品「' + title + '」"><i data-lucide="trash-2" class="w-4 h-4"></i></button>' +
+              '</div>' +
+            '</div>'
+          );
+          $('#work-list').prepend($newRow);
+          lucide.createIcons();
+        }
+        closeModal('#modal-work-form');
+        showToast('已保存');
+      });
+
+      // ---------- 关于我 Tab：技能标签增删 ----------
+      function addSkillChip(name) {
+        name = $.trim(name);
+        if (!name) { return; }
+        // 去重：已存在同名标签则不重复添加（实际开发中需与 tags 表同步）
+        var exists = false;
+        $('#skill-chips .skill-chip-name').each(function () {
+          if ($(this).text() === name) { exists = true; }
+        });
+        if (exists) { return; }
+        var $chip = $(
+          '<span class="skill-chip inline-flex items-center gap-1 pl-3 pr-1.5 py-1 rounded-full text-xs font-medium bg-primary-container text-primary">' +
+            '<span class="skill-chip-name">' + name + '</span>' +
+            '<button class="skill-chip-remove w-4 h-4 inline-flex items-center justify-center rounded-full hover:bg-primary/15 transition-colors" aria-label="移除「' + name + '」">' +
+              '<i data-lucide="x" class="w-3 h-3"></i>' +
+            '</button>' +
+          '</span>'
+        );
+        $('#skill-chips').append($chip);
+        lucide.createIcons();
+      }
+
+      $('#btn-add-skill').on('click', function () {
+        addSkillChip($('#profile-skill-input').val());
+        $('#profile-skill-input').val('').trigger('focus');
+      });
+
+      // 输入框内按回车直接添加
+      $('#profile-skill-input').on('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          addSkillChip($(this).val());
+          $(this).val('');
+        }
+      });
+
+      $('#skill-chips').on('click', '.skill-chip-remove', function () {
+        $(this).closest('.skill-chip').remove();
+      });
+
+      // 保存「关于我」：实际开发中应 PUT /api/profile 保存全部字段；原型阶段仅 Toast 提示
+      $('#btn-save-profile').on('click', function () {
+        showToast('已保存');
+      });
+
+      // ---------- 页脚社交链接：示意地址（邮箱 mailto 可直接生效） ----------
+      $('#footer-social').on('click', '.social-link', function (e) {
+        if ($(this).attr('href') === '#') {
+          e.preventDefault();
+          console.log('打开社交链接（示意）:', $(this).data('social'));
+        }
+      });
+
+      // 新建笔记按钮（#btn-new-note）与各笔记行编辑按钮（.btn-edit）均为 <a href="admin-editor.html?note_id=...">
+      // 直接跳转实际页面文件并携带 note_id 参数，无需额外 JS
+    });
+  </script>
+  <script>lucide.createIcons();</script>
+
+
+</body>
+
+</html>

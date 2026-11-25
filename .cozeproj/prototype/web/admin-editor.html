@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色（苔藓绿：数字花园的生长与沉淀意象） === */
+      --color-primary:              #3F6B50;
+      --color-primary-container:    #DEEBDD;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面（暖纸白书桌） === */
+      --color-background:                 #FAF9F5;
+      --color-surface-container-lowest:   #FFFFFF;
+      --color-surface:                    #FFFFFF;
+      --color-surface-container:          #F1EFE9;
+      --color-surface-container-high:     #EAE7DF;
+      --color-surface-container-highest:  #E0DCD1;
+      /* === 文字（暖墨黑 / 暖灰） === */
+      --color-on-surface:           #26251F;
+      --color-on-surface-variant:   #6E6A5E;
+      /* === 功能色 === */
+      --color-success:  #22c55e;
+      --color-error:    #ef4444;
+      --color-warning:  #f59e0b;
+      /* === 边框 === */
+      --color-outline:          #8A8577;
+      --color-outline-variant:  #C9C5B8;
+      /* === 圆角 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.25rem;
+      --radius-full: 9999px;
+      /* === 阴影（克制柔和，像纸张的轻微浮起） === */
+      --shadow-card:   0 2px 12px rgba(38,37,31,0.08);
+      --shadow-float:  0 10px 30px rgba(38,37,31,0.12);
+      --shadow-dialog: 0 25px 60px rgba(38,37,31,0.22);
+      /* === 字体：标题衬线（书香气质），正文常规 === */
+      --font-sans: "Noto Sans SC", system-ui, sans-serif;
+      --font-serif: "Noto Serif SC", "Noto Sans SC", serif;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- ===== 简化顶部栏（编辑页专注模式，不含全局导航） ===== -->
+  <header class="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-outline-variant/15">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 grid grid-cols-[1fr_auto_1fr] items-center">
+      <!-- 左：返回后台列表（跳 admin.html） -->
+      <a href="admin.html" id="btn-header-back" aria-label="返回后台列表"
+         class="justify-self-start inline-flex items-center gap-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>返回
+      </a>
+      <!-- 中：页面标题 -->
+      <h1 class="font-serif font-bold text-lg text-on-surface">编辑笔记</h1>
+      <!-- 右：保存草稿（次按钮） -->
+      <button type="button" id="btn-header-save"
+              class="justify-self-end bg-surface-container text-on-surface border-none px-4 py-2 rounded-md text-sm font-medium
+                     hover:bg-surface-container-high active:scale-[0.98] transition-all">保存草稿</button>
+    </div>
+  </header>
+
+  <!-- @main-content:start -->
+  <main class="max-w-4xl mx-auto w-full px-4 sm:px-6 py-10">
+
+    <!-- ===== 1. 标题输入 ===== -->
+    <input type="text" id="input-note-title" value="数字花园的种植哲学" placeholder="给这篇笔记起个标题…"
+           class="w-full text-2xl font-serif font-bold text-on-surface bg-transparent border-b border-outline-variant/20 rounded-none px-0 py-3
+                  placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-0 focus:border-primary/40 transition-colors" />
+
+    <!-- ===== 2. 元信息行 ===== -->
+    <div class="flex flex-wrap items-center gap-3 mt-3">
+      <span id="badge-status"
+            class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-surface-container-high text-on-surface-variant">草稿</span>
+      <span class="text-xs text-on-surface-variant">上次保存于 2024/06/08 14:32 · 发布后将展示在数字花园</span>
+    </div>
+
+    <!-- ===== 3. 标签区 ===== -->
+    <section class="mt-8">
+      <div class="flex items-center gap-2 mb-2">
+        <i data-lucide="tags" class="w-4 h-4 text-on-surface-variant"></i>
+        <span class="text-sm font-medium text-on-surface">标签</span>
+        <span class="text-xs text-on-surface-variant/70">输入后回车快速添加</span>
+      </div>
+      <!-- 标签输入组合框：胶囊 + 输入框，focus 时整体 ring 反馈 -->
+      <div class="flex flex-wrap items-center gap-2 bg-surface-container rounded-md px-3 py-2
+                  focus-within:ring-2 focus-within:ring-primary/30 transition-all">
+        <div id="tag-list" class="flex flex-wrap items-center gap-2">
+          <!-- 已选标签-1：前端 -->
+          <span class="tag-chip inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary-container text-primary" data-tag="前端">前端<button type="button" class="btn-remove-tag -mr-0.5 p-0.5 rounded-full hover:bg-primary/20 transition-colors" aria-label="移除标签 前端"><i data-lucide="x" class="w-3 h-3"></i></button></span>
+          <!-- 已选标签-2：阅读 -->
+          <span class="tag-chip inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary-container text-primary" data-tag="阅读">阅读<button type="button" class="btn-remove-tag -mr-0.5 p-0.5 rounded-full hover:bg-primary/20 transition-colors" aria-label="移除标签 阅读"><i data-lucide="x" class="w-3 h-3"></i></button></span>
+          <!-- 已选标签-3：方法论 -->
+          <span class="tag-chip inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary-container text-primary" data-tag="方法论">方法论<button type="button" class="btn-remove-tag -mr-0.5 p-0.5 rounded-full hover:bg-primary/20 transition-colors" aria-label="移除标签 方法论"><i data-lucide="x" class="w-3 h-3"></i></button></span>
+        </div>
+        <input type="text" id="tag-input" placeholder="输入标签后回车添加…"
+               class="flex-1 min-w-[160px] bg-transparent border-none px-1 py-1 text-sm text-on-surface
+                      placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-0" />
+      </div>
+    </section>
+
+    <!-- ===== 4. Markdown 编辑 / 预览双栏（桌面并排，移动端上下堆叠） ===== -->
+    <!-- 原型说明：编辑器中 Markdown 示意文本仅用于展示排版效果，开发阶段内容全部由用户输入 -->
+    <section class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+
+      <!-- 左栏：编辑 -->
+      <div class="flex flex-col">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-sm text-xs font-medium bg-surface-container-high text-on-surface-variant">
+            <i data-lucide="pencil-line" class="w-3 h-3"></i>编辑
+          </span>
+          <span class="text-xs text-on-surface-variant/70">Markdown 语法</span>
+        </div>
+        <textarea id="editor-content" spellcheck="false" placeholder="使用 Markdown 语法撰写笔记…"
+                  class="w-full min-h-[400px] font-mono text-sm leading-relaxed text-on-surface bg-surface-container border-none rounded-md p-4
+                         placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all resize-y"># 数字花园的种植哲学
+
+数字花园不是博客，而是一座持续生长的思想园地——每篇笔记都是一颗种子，在反复修订与相互链接中慢慢长成体系。
+
+## 今天的三个观察
+
+- 笔记之间应该互相链接，而非孤立存放
+- 公开写作能倒逼思考，让想法更快成熟
+- 小步慢耕胜过一次性输出，保持常青
+
+> 一座花园的价值不在于它有多完美，而在于它是否仍在生长。
+
+```js
+// 给相邻的笔记浇水
+function waterPlant(note) {
+  note.links.forEach(function (link) {
+    grow(link.seed);
+  });
+}
+```
+
+**下一步**：把「标签系统」与「双链笔记」两篇互相引用起来，看看会长出什么。</textarea>
+      </div>
+
+      <!-- 右栏：预览 -->
+      <div class="flex flex-col">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-sm text-xs font-medium bg-surface-container-high text-on-surface-variant">
+            <i data-lucide="eye" class="w-3 h-3"></i>预览
+          </span>
+          <span class="text-xs text-on-surface-variant/70">渲染效果示意</span>
+        </div>
+        <div id="preview-pane" class="flex-1 min-h-[400px] bg-surface rounded-xl p-6 shadow-card">
+          <!-- 预览-笔记标题 -->
+          <h2 class="font-serif text-xl font-bold text-on-surface mb-3">数字花园的种植哲学</h2>
+          <!-- 预览-段落 -->
+          <p class="text-sm leading-relaxed text-on-surface mb-4">数字花园不是博客，而是一座持续生长的思想园地——每篇笔记都是一颗种子，在反复修订与相互链接中慢慢长成体系。</p>
+          <!-- 预览-小节标题 -->
+          <h3 class="font-serif text-base font-semibold text-on-surface mb-2">今天的三个观察</h3>
+          <!-- 预览-列表 -->
+          <ul class="list-disc pl-5 space-y-1.5 text-sm text-on-surface mb-4">
+            <li>笔记之间应该互相链接，而非孤立存放</li>
+            <li>公开写作能倒逼思考，让想法更快成熟</li>
+            <li>小步慢耕胜过一次性输出，保持常青</li>
+          </ul>
+          <!-- 预览-引用块 -->
+          <blockquote class="border-l-4 border-primary/40 bg-primary-container/40 rounded-r-md px-4 py-3 mb-4">
+            <p class="text-sm text-on-surface-variant italic font-serif">一座花园的价值不在于它有多完美，而在于它是否仍在生长。</p>
+          </blockquote>
+          <!-- 预览-代码块 -->
+          <pre class="bg-surface-container rounded-md p-4 text-xs font-mono leading-relaxed text-on-surface/90 overflow-x-auto mb-4"><code>// 给相邻的笔记浇水
+function waterPlant(note) {
+  note.links.forEach(function (link) {
+    grow(link.seed);
+  });
+}</code></pre>
+          <!-- 预览-段落（加粗强调） -->
+          <p class="text-sm leading-relaxed text-on-surface"><strong class="font-semibold">下一步</strong>：把「标签系统」与「双链笔记」两篇互相引用起来，看看会长出什么。</p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ===== 5. 底部操作栏 ===== -->
+    <div class="mt-10 pt-6 border-t border-outline-variant/20 flex flex-wrap items-center justify-between gap-3">
+      <!-- 左：返回后台列表（跳 admin.html） -->
+      <a href="admin.html" id="btn-footer-back"
+         class="inline-flex items-center gap-2 bg-surface-container text-on-surface border-none px-4 py-2 rounded-md text-sm font-medium
+                hover:bg-surface-container-high active:scale-[0.98] transition-all">
+        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>返回
+      </a>
+      <!-- 右：保存草稿 + 发布 -->
+      <div class="flex items-center gap-3">
+        <button type="button" id="btn-save-draft"
+                class="inline-flex items-center gap-2 bg-surface-container text-on-surface border-none px-4 py-2 rounded-md text-sm font-medium
+                       hover:bg-surface-container-high active:scale-[0.98] transition-all">
+          <i data-lucide="save" class="w-3.5 h-3.5"></i>保存草稿
+        </button>
+        <button type="button" id="btn-publish"
+                class="inline-flex items-center gap-2 bg-primary text-on-primary px-5 py-2 rounded-md text-sm font-medium
+                       hover:opacity-90 active:scale-[0.98] transition-all">
+          <i data-lucide="send" class="w-3.5 h-3.5"></i>发布
+        </button>
+      </div>
+    </div>
+
+  </main>
+  <!-- @main-content:end -->
+
+  <!-- Toast 轻提示 -->
+  <div id="toast" role="status" aria-live="polite"
+       class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-on-surface text-background px-4 py-2.5 rounded-md text-sm shadow-float
+              opacity-0 pointer-events-none transition-opacity duration-300">已保存为草稿</div>
+
+  <script>
+    $(function () {
+
+      // ---------- Toast 轻提示 ----------
+      var toastTimer = null;
+      function showToast(msg) {
+        $('#toast').text(msg).removeClass('opacity-0').addClass('opacity-100');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          $('#toast').addClass('opacity-0').removeClass('opacity-100');
+        }, 1800);
+      }
+
+      // ---------- 标签输入：回车创建标签胶囊（与已有标签去重） ----------
+      $('#tag-input').on('keydown', function (e) {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        var val = $(this).val().trim();
+        if (!val) return;
+
+        // 与已有标签去重
+        var exists = false;
+        $('#tag-list .tag-chip').each(function () {
+          if ($(this).data('tag') === val) exists = true;
+        });
+        if (exists) {
+          showToast('标签「' + val + '」已存在');
+          $(this).val('');
+          return;
+        }
+
+        // 创建新胶囊（文本用 jQuery text() 写入，避免引号/转义问题）
+        var chip = $('<span>').attr({
+          'class': 'tag-chip inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary-container text-primary',
+          'data-tag': val
+        }).text(val);
+        chip.append($('<button type="button" aria-label="移除标签 ' + val + '"></button>')
+          .attr('class', 'btn-remove-tag -mr-0.5 p-0.5 rounded-full hover:bg-primary/20 transition-colors')
+          .append('<i data-lucide="x" class="w-3 h-3"></i>'));
+        $('#tag-list').append(chip);
+        $(this).val('');
+        lucide.createIcons(); // 渲染新胶囊中的 x 图标
+      });
+
+      // ---------- 点击 x 移除标签胶囊（事件委托，兼容动态新增的胶囊） ----------
+      $('#tag-list').on('click', '.btn-remove-tag', function () {
+        $(this).closest('.tag-chip').remove();
+      });
+
+      // ---------- 保存草稿（顶部栏与底部操作栏共用） ----------
+      // 完整行为：保存 status=draft → Toast 提示 → 跳回后台列表 admin.html
+      function saveAsDraft() {
+        showToast('已保存为草稿');
+        setTimeout(function () { window.location.href = 'admin.html'; }, 900);
+      }
+      $('#btn-header-save').on('click', saveAsDraft);
+      $('#btn-save-draft').on('click', saveAsDraft);
+
+      // ---------- 发布 ----------
+      // 完整行为：保存 status=published → Toast 提示 → 跳回后台列表 admin.html
+      $('#btn-publish').on('click', function () {
+        showToast('已发布');
+        setTimeout(function () { window.location.href = 'admin.html'; }, 900);
+      });
+
+      // ---------- 返回（#btn-header-back / #btn-footer-back，均为 <a href="admin.html">） ----------
+      // 完整行为：返回前应检测是否有未保存改动——
+      // 1. 无改动 → 直接跳转 admin.html
+      // 2. 有改动 → 弹出「放弃未保存的修改？」确认弹窗：
+      //    - 「放弃」→ 跳转 admin.html
+      //    - 「继续编辑」→ 关闭弹窗留在当前页
+      // 原型阶段简化为由 href 直接完成跳转
+
+    });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

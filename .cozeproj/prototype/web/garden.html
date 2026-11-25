@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>数字花园 · 枫</title>
+
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色（苔藓绿：数字花园的生长与沉淀意象） === */
+      --color-primary:              #3F6B50;
+      --color-primary-container:    #DEEBDD;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面（暖纸白书桌） === */
+      --color-background:                 #FAF9F5;
+      --color-surface-container-lowest:   #FFFFFF;
+      --color-surface:                    #FFFFFF;
+      --color-surface-container:          #F1EFE9;
+      --color-surface-container-high:     #EAE7DF;
+      --color-surface-container-highest:  #E0DCD1;
+      /* === 文字（暖墨黑 / 暖灰） === */
+      --color-on-surface:           #26251F;
+      --color-on-surface-variant:   #6E6A5E;
+      /* === 功能色 === */
+      --color-success:  #22c55e;
+      --color-error:    #ef4444;
+      --color-warning:  #f59e0b;
+      /* === 边框 === */
+      --color-outline:          #8A8577;
+      --color-outline-variant:  #C9C5B8;
+      /* === 圆角 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.25rem;
+      --radius-full: 9999px;
+      /* === 阴影（克制柔和，像纸张的轻微浮起） === */
+      --shadow-card:   0 2px 12px rgba(38,37,31,0.08);
+      --shadow-float:  0 10px 30px rgba(38,37,31,0.12);
+      --shadow-dialog: 0 25px 60px rgba(38,37,31,0.22);
+      /* === 字体：标题衬线（书香气质），正文常规 === */
+      --font-sans: "Noto Sans SC", system-ui, sans-serif;
+      --font-serif: "Noto Serif SC", "Noto Sans SC", serif;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件，不需要的页面则不要复制此段 -->
+  <header class="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-outline-variant/15">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="home.html" class="flex items-baseline gap-3" aria-label="返回首页">
+        <span class="font-serif font-bold text-xl text-on-surface">枫</span>
+        <span class="hidden sm:inline text-[10px] tracking-[0.35em] text-on-surface-variant uppercase">Now is the time</span>
+      </a>
+      <nav class="flex items-center gap-6 sm:gap-8">
+        <a href="home.html" class="text-sm text-on-surface-variant hover:text-on-surface transition-colors">首页</a>
+        <a href="garden.html" aria-current="page" class="text-sm font-semibold text-on-surface transition-colors">数字花园</a>
+        <a href="about.html" class="text-sm text-on-surface-variant hover:text-on-surface transition-colors">关于我</a>
+        <a href="admin.html" class="text-sm text-on-surface-variant hover:text-on-surface transition-colors">后台管理</a>
+      </nav>
+    </div>
+  </header>
+  <!-- @nav:end 导航组件，不需要的页面则不要复制此段 -->
+
+  <main class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-10">
+    <!-- @main-content:start -->
+
+    <!-- 页头：大标题 + 副标题 + 结果计数 -->
+    <header id="garden-header" class="mb-10">
+      <div class="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <h1 class="font-serif text-3xl font-bold text-on-surface tracking-wide">数字花园</h1>
+          <p class="mt-2 text-sm text-on-surface-variant">随手种下的想法与思考，彼此连结成网。</p>
+        </div>
+        <p id="result-count" class="pb-1 text-xs text-on-surface-variant">共 9 篇笔记</p>
+      </div>
+    </header>
+
+    <!-- 工具区：搜索框 + 标签云 -->
+    <section id="garden-tools" class="mb-8 space-y-4">
+      <!-- 搜索框 -->
+      <div class="relative max-w-md">
+        <i data-lucide="search" class="w-4 h-4 text-on-surface-variant/70 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+        <input id="search-input" type="text" placeholder="搜索笔记…" aria-label="搜索笔记"
+               class="w-full bg-surface-container border-none rounded-md pl-9 pr-9 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" />
+        <button id="btn-clear-search" type="button" aria-label="清空搜索" style="display:none"
+                class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors">
+          <i data-lucide="x" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+
+      <!-- 标签云：默认"全部"激活，点击标签筛选，再次点击恢复全部 -->
+      <div id="tag-cloud" class="flex flex-wrap gap-2" role="group" aria-label="按标签筛选笔记">
+        <!-- 标签-全部（默认激活态） -->
+        <button id="chip-all" type="button" aria-pressed="true"
+                class="tag-chip px-3.5 py-1.5 rounded-full text-sm font-medium bg-primary text-on-primary transition-colors" data-tag="">全部</button>
+        <!-- 标签-产品设计 -->
+        <button id="chip-product-design" type="button" aria-pressed="false"
+                class="tag-chip px-3.5 py-1.5 rounded-full text-sm font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-tag="产品设计">产品设计</button>
+        <!-- 标签-前端开发 -->
+        <button id="chip-frontend" type="button" aria-pressed="false"
+                class="tag-chip px-3.5 py-1.5 rounded-full text-sm font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-tag="前端开发">前端开发</button>
+        <!-- 标签-读书笔记 -->
+        <button id="chip-reading" type="button" aria-pressed="false"
+                class="tag-chip px-3.5 py-1.5 rounded-full text-sm font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-tag="读书笔记">读书笔记</button>
+        <!-- 标签-生活随笔 -->
+        <button id="chip-life" type="button" aria-pressed="false"
+                class="tag-chip px-3.5 py-1.5 rounded-full text-sm font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-tag="生活随笔">生活随笔</button>
+        <!-- 标签-效率工具 -->
+        <button id="chip-productivity" type="button" aria-pressed="false"
+                class="tag-chip px-3.5 py-1.5 rounded-full text-sm font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-tag="效率工具">效率工具</button>
+        <!-- 标签-AI 观察 -->
+        <button id="chip-ai" type="button" aria-pressed="false"
+                class="tag-chip px-3.5 py-1.5 rounded-full text-sm font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-tag="AI 观察">AI 观察</button>
+        <!-- 标签-旅行见闻 -->
+        <button id="chip-travel" type="button" aria-pressed="false"
+                class="tag-chip px-3.5 py-1.5 rounded-full text-sm font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-tag="旅行见闻">旅行见闻</button>
+        <!-- 标签-碎碎念 -->
+        <button id="chip-murmur" type="button" aria-pressed="false"
+                class="tag-chip px-3.5 py-1.5 rounded-full text-sm font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-tag="碎碎念">碎碎念</button>
+        <!-- 标签-个人成长 -->
+        <button id="chip-growth" type="button" aria-pressed="false"
+                class="tag-chip px-3.5 py-1.5 rounded-full text-sm font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-tag="个人成长">个人成长</button>
+      </div>
+    </section>
+
+    <!-- 笔记卡片网格：桌面 3 列 / 平板 2 列 / 移动 1 列 -->
+    <section id="note-grid" aria-label="笔记列表" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+
+      <!-- 笔记卡片 - 笔记1：数字花园的写作理念 -->
+      <a id="note-card-1" href="note-detail.html?note_id=note-001"
+         class="note-card group flex flex-col bg-surface rounded-xl shadow-card p-5 transition-all duration-200 hover:shadow-float hover:-translate-y-1"
+         data-tags="碎碎念 个人成长"
+         data-title="把想法种进花园，而不是埋进抽屉"
+         data-excerpt="关于数字花园这种写作方式的思考：笔记不必追求一次写完，像园丁一样持续修剪、嫁接、补种，让公开的粗糙慢慢长成完整的思考。">
+        <h2 class="text-base font-semibold text-on-surface leading-snug group-hover:text-primary transition-colors">把想法种进花园，而不是埋进抽屉</h2>
+        <p class="mt-2 text-sm text-on-surface-variant leading-relaxed line-clamp-3">关于数字花园这种写作方式的思考：笔记不必追求一次写完，像园丁一样持续修剪、嫁接、补种，让公开的粗糙慢慢长成完整的思考。</p>
+        <div class="mt-auto pt-4 border-t border-outline-variant/15 flex items-center justify-between gap-3">
+          <div class="flex flex-wrap gap-1.5">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">碎碎念</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">个人成长</span>
+          </div>
+          <time class="text-xs text-on-surface-variant whitespace-nowrap">2025-06-02</time>
+        </div>
+      </a>
+
+      <!-- 笔记卡片 - 笔记2：渐进式总结读书法 -->
+      <a id="note-card-2" href="note-detail.html?note_id=note-002"
+         class="note-card group flex flex-col bg-surface rounded-xl shadow-card p-5 transition-all duration-200 hover:shadow-float hover:-translate-y-1"
+         data-tags="读书笔记 效率工具"
+         data-title="渐进式总结：让读书笔记长出根须"
+         data-excerpt="把读书笔记从摘抄改成四层递进：原文、划线、用自己的话重写、与实践关联。重读时效率明显提升，笔记开始真正长出根须。">
+        <h2 class="text-base font-semibold text-on-surface leading-snug group-hover:text-primary transition-colors">渐进式总结：让读书笔记长出根须</h2>
+        <p class="mt-2 text-sm text-on-surface-variant leading-relaxed line-clamp-3">把读书笔记从摘抄改成四层递进：原文、划线、用自己的话重写、与实践关联。重读时效率明显提升，笔记开始真正长出根须。</p>
+        <div class="mt-auto pt-4 border-t border-outline-variant/15 flex items-center justify-between gap-3">
+          <div class="flex flex-wrap gap-1.5">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">读书笔记</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">效率工具</span>
+          </div>
+          <time class="text-xs text-on-surface-variant whitespace-nowrap">2025-05-28</time>
+        </div>
+      </a>
+
+      <!-- 笔记卡片 - 笔记3：移动端表单设计细节 -->
+      <a id="note-card-3" href="note-detail.html?note_id=note-003"
+         class="note-card group flex flex-col bg-surface rounded-xl shadow-card p-5 transition-all duration-200 hover:shadow-float hover:-translate-y-1"
+         data-tags="产品设计 前端开发"
+         data-title="移动端表单设计的 12 个细节"
+         data-excerpt="从占位符的误导、键盘类型的匹配，到错误提示出现的位置，整理一次表单走查中反复出现的问题，附自查清单。">
+        <h2 class="text-base font-semibold text-on-surface leading-snug group-hover:text-primary transition-colors">移动端表单设计的 12 个细节</h2>
+        <p class="mt-2 text-sm text-on-surface-variant leading-relaxed line-clamp-3">从占位符的误导、键盘类型的匹配，到错误提示出现的位置，整理一次表单走查中反复出现的问题，附自查清单。</p>
+        <div class="mt-auto pt-4 border-t border-outline-variant/15 flex items-center justify-between gap-3">
+          <div class="flex flex-wrap gap-1.5">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">产品设计</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">前端开发</span>
+          </div>
+          <time class="text-xs text-on-surface-variant whitespace-nowrap">2025-05-25</time>
+        </div>
+      </a>
+
+      <!-- 笔记卡片 - 笔记4：CSS 容器查询实战 -->
+      <a id="note-card-4" href="note-detail.html?note_id=note-004"
+         class="note-card group flex flex-col bg-surface rounded-xl shadow-card p-5 transition-all duration-200 hover:shadow-float hover:-translate-y-1"
+         data-tags="前端开发"
+         data-title="容器查询：组件终于自己会长大了"
+         data-excerpt="用容器查询重构后台的卡片组件：同一个组件放进侧栏和主区域都能自适应排版，媒体查询的判断逻辑终于可以从组件里删掉了。">
+        <h2 class="text-base font-semibold text-on-surface leading-snug group-hover:text-primary transition-colors">容器查询：组件终于自己会长大了</h2>
+        <p class="mt-2 text-sm text-on-surface-variant leading-relaxed line-clamp-3">用容器查询重构后台的卡片组件：同一个组件放进侧栏和主区域都能自适应排版，媒体查询的判断逻辑终于可以从组件里删掉了。</p>
+        <div class="mt-auto pt-4 border-t border-outline-variant/15 flex items-center justify-between gap-3">
+          <div class="flex flex-wrap gap-1.5">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">前端开发</span>
+          </div>
+          <time class="text-xs text-on-surface-variant whitespace-nowrap">2025-05-21</time>
+        </div>
+      </a>
+
+      <!-- 笔记卡片 - 笔记5：AI 时代的笔记观 -->
+      <a id="note-card-5" href="note-detail.html?note_id=note-005"
+         class="note-card group flex flex-col bg-surface rounded-xl shadow-card p-5 transition-all duration-200 hover:shadow-float hover:-translate-y-1"
+         data-tags="AI 观察 读书笔记"
+         data-title="AI 时代，笔记的价值在提问而非收藏"
+         data-excerpt="收藏夹越来越满，重读的次数却越来越少。与其囤积资料，不如把笔记写成向 AI 与自己提问的起点，记录我是怎么想的。">
+        <h2 class="text-base font-semibold text-on-surface leading-snug group-hover:text-primary transition-colors">AI 时代，笔记的价值在提问而非收藏</h2>
+        <p class="mt-2 text-sm text-on-surface-variant leading-relaxed line-clamp-3">收藏夹越来越满，重读的次数却越来越少。与其囤积资料，不如把笔记写成向 AI 与自己提问的起点，记录我是怎么想的。</p>
+        <div class="mt-auto pt-4 border-t border-outline-variant/15 flex items-center justify-between gap-3">
+          <div class="flex flex-wrap gap-1.5">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">AI 观察</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">读书笔记</span>
+          </div>
+          <time class="text-xs text-on-surface-variant whitespace-nowrap">2025-05-18</time>
+        </div>
+      </a>
+
+      <!-- 笔记卡片 - 笔记6：京都旅行随笔 -->
+      <a id="note-card-6" href="note-detail.html?note_id=note-006"
+         class="note-card group flex flex-col bg-surface rounded-xl shadow-card p-5 transition-all duration-200 hover:shadow-float hover:-translate-y-1"
+         data-tags="旅行见闻 生活随笔"
+         data-title="在京都的雨里重新学会走路"
+         data-excerpt="哲学之道、鸭川与无人的庭院。没有赶行程的一周，反而看清了旅行和记笔记的共同点：慢下来，才看得见细节。">
+        <h2 class="text-base font-semibold text-on-surface leading-snug group-hover:text-primary transition-colors">在京都的雨里重新学会走路</h2>
+        <p class="mt-2 text-sm text-on-surface-variant leading-relaxed line-clamp-3">哲学之道、鸭川与无人的庭院。没有赶行程的一周，反而看清了旅行和记笔记的共同点：慢下来，才看得见细节。</p>
+        <div class="mt-auto pt-4 border-t border-outline-variant/15 flex items-center justify-between gap-3">
+          <div class="flex flex-wrap gap-1.5">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">旅行见闻</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">生活随笔</span>
+          </div>
+          <time class="text-xs text-on-surface-variant whitespace-nowrap">2025-05-14</time>
+        </div>
+      </a>
+
+      <!-- 笔记卡片 - 笔记7：低成本专注系统 -->
+      <a id="note-card-7" href="note-detail.html?note_id=note-007"
+         class="note-card group flex flex-col bg-surface rounded-xl shadow-card p-5 transition-all duration-200 hover:shadow-float hover:-translate-y-1"
+         data-tags="效率工具 生活随笔"
+         data-title="我的低成本专注系统：三个工具和一张纸"
+         data-excerpt="不追求全能的工作流，只保留番茄钟、离线白噪音和一张写满当日三件事的纸。工具越少，坚持得越久。">
+        <h2 class="text-base font-semibold text-on-surface leading-snug group-hover:text-primary transition-colors">我的低成本专注系统：三个工具和一张纸</h2>
+        <p class="mt-2 text-sm text-on-surface-variant leading-relaxed line-clamp-3">不追求全能的工作流，只保留番茄钟、离线白噪音和一张写满当日三件事的纸。工具越少，坚持得越久。</p>
+        <div class="mt-auto pt-4 border-t border-outline-variant/15 flex items-center justify-between gap-3">
+          <div class="flex flex-wrap gap-1.5">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">效率工具</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">生活随笔</span>
+          </div>
+          <time class="text-xs text-on-surface-variant whitespace-nowrap">2025-05-10</time>
+        </div>
+      </a>
+
+      <!-- 笔记卡片 - 笔记8：写作一年复盘 -->
+      <a id="note-card-8" href="note-detail.html?note_id=note-008"
+         class="note-card group flex flex-col bg-surface rounded-xl shadow-card p-5 transition-all duration-200 hover:shadow-float hover:-translate-y-1"
+         data-tags="碎碎念 个人成长"
+         data-title="写给犹豫要不要开始写作的你"
+         data-excerpt="不需要等想清楚了再动笔。写作是思考的一部分，先写下来，再慢慢修改——这是我从零开始写作一年的复盘。">
+        <h2 class="text-base font-semibold text-on-surface leading-snug group-hover:text-primary transition-colors">写给犹豫要不要开始写作的你</h2>
+        <p class="mt-2 text-sm text-on-surface-variant leading-relaxed line-clamp-3">不需要等想清楚了再动笔。写作是思考的一部分，先写下来，再慢慢修改——这是我从零开始写作一年的复盘。</p>
+        <div class="mt-auto pt-4 border-t border-outline-variant/15 flex items-center justify-between gap-3">
+          <div class="flex flex-wrap gap-1.5">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">碎碎念</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">个人成长</span>
+          </div>
+          <time class="text-xs text-on-surface-variant whitespace-nowrap">2025-05-06</time>
+        </div>
+      </a>
+
+      <!-- 笔记卡片 - 笔记9：小团队设计系统落地 -->
+      <a id="note-card-9" href="note-detail.html?note_id=note-009"
+         class="note-card group flex flex-col bg-surface rounded-xl shadow-card p-5 transition-all duration-200 hover:shadow-float hover:-translate-y-1"
+         data-tags="产品设计 前端开发"
+         data-title="设计系统不是组件库：给小团队的落地笔记"
+         data-excerpt="组件库只是产物，设计系统真正的价值在共识：命名规则、间距尺度与评审流程。记录三人小团队半年下来的落地经验。">
+        <h2 class="text-base font-semibold text-on-surface leading-snug group-hover:text-primary transition-colors">设计系统不是组件库：给小团队的落地笔记</h2>
+        <p class="mt-2 text-sm text-on-surface-variant leading-relaxed line-clamp-3">组件库只是产物，设计系统真正的价值在共识：命名规则、间距尺度与评审流程。记录三人小团队半年下来的落地经验。</p>
+        <div class="mt-auto pt-4 border-t border-outline-variant/15 flex items-center justify-between gap-3">
+          <div class="flex flex-wrap gap-1.5">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">产品设计</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">前端开发</span>
+          </div>
+          <time class="text-xs text-on-surface-variant whitespace-nowrap">2025-05-02</time>
+        </div>
+      </a>
+
+    </section>
+
+    <!-- 空结果提示（搜索/标签筛选无匹配时显示，默认隐藏） -->
+    <div id="empty-result" style="display:none" class="flex flex-col items-center text-center py-20">
+      <div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center">
+        <i data-lucide="sprout" class="w-6 h-6 text-on-surface-variant/70"></i>
+      </div>
+      <p class="mt-4 text-sm font-medium text-on-surface">没有找到相关笔记</p>
+      <p class="mt-1 text-xs text-on-surface-variant">换个关键词，或清除标签筛选再试试</p>
+      <button id="btn-reset-filter" type="button"
+              class="mt-5 px-4 py-2 rounded-md text-sm font-medium text-primary bg-primary/10 hover:bg-primary/15 transition-colors">清除筛选条件</button>
+    </div>
+
+    <!-- ============ 区块：留言板（访客可留言，仅站长可删除） ============ -->
+    <section id="messages-section" class="mt-20 border-t border-outline-variant/15 pt-14">
+      <div class="max-w-3xl mx-auto">
+        <!-- 标题 -->
+        <div class="text-center">
+          <h2 class="font-serif text-2xl font-bold text-on-surface">留下你的想法</h2>
+          <p class="mt-2 text-sm text-on-surface-variant">欢迎写下你的见解与感受，它们是花园的另一场对话</p>
+        </div>
+
+        <!-- 留言表单 -->
+        <div class="mt-8 bg-surface rounded-xl shadow-card p-6 sm:p-8">
+          <div class="grid sm:grid-cols-[200px_1fr] gap-4">
+            <div>
+              <label for="msg-name" class="block text-xs font-medium text-on-surface-variant mb-1.5">昵称</label>
+              <input id="msg-name" type="text" maxlength="20" placeholder="怎么称呼你？"
+                     class="w-full border-none bg-surface-container rounded-md px-3 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-2 focus:ring-primary/30" />
+            </div>
+            <div>
+              <label for="msg-content" class="block text-xs font-medium text-on-surface-variant mb-1.5">想说的话</label>
+              <textarea id="msg-content" rows="3" maxlength="500" placeholder="写下你的想法、见解或感受…"
+                        class="w-full border-none bg-surface-container rounded-md px-3 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"></textarea>
+            </div>
+          </div>
+          <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <p class="text-xs text-on-surface-variant/70">留言为公开内容，将展示在下方列表中</p>
+            <button id="msg-submit" type="button"
+                    class="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-md bg-primary text-on-primary text-sm font-medium hover:bg-primary/90 transition-colors shrink-0">
+              <i data-lucide="message-circle" class="w-4 h-4"></i>留下想法
+            </button>
+          </div>
+        </div>
+
+        <!-- 留言列表（示意数据，开发阶段从数据库读取，新留言排在最前） -->
+        <ul id="msg-list" class="mt-8 space-y-4">
+          <!-- 留言-1 -->
+          <li class="bg-surface rounded-xl shadow-card p-5 sm:p-6 group">
+            <div class="flex items-start gap-3">
+              <span class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-serif text-sm font-bold shrink-0">林</span>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <p class="text-sm font-medium text-on-surface">林间拾光</p>
+                  <span class="text-xs text-on-surface-variant/70">刚刚</span>
+                  <!-- 我的留言标识：开发阶段由 visitor_token 匹配本机后渲染 -->
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary">我的留言</span>
+                </div>
+                <!-- 查看态 -->
+                <p class="msg-view mt-1.5 text-sm leading-relaxed text-on-surface-variant">“趁年轻去做有意义的事”——这句话放在首页太合适了，每次来都能被打一次气。</p>
+                <!-- 编辑态：仅本机留言且距发布 <30 分钟时可进入，超时后按钮不再渲染 -->
+                <div class="msg-edit hidden mt-2">
+                  <textarea class="msg-input w-full border-none bg-surface-container rounded-md p-3 text-sm leading-relaxed text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30" rows="3">“趁年轻去做有意义的事”——这句话放在首页太合适了，每次来都能被打一次气。</textarea>
+                  <div class="mt-2 flex justify-end gap-2">
+                    <button class="msg-cancel px-3 py-1.5 text-xs rounded-md bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors">取消</button>
+                    <button class="msg-save px-3 py-1.5 text-xs rounded-md bg-primary text-on-primary hover:bg-primary/90 transition-colors">保存</button>
+                  </div>
+                </div>
+              </div>
+              <!-- 访客本人 30 分钟内：编辑/删除（开发阶段由 visitor_token + 30 分钟窗口控制渲染） -->
+              <div class="flex items-center gap-1 shrink-0">
+                <button class="msg-edit-btn opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant/50 hover:text-primary p-1" aria-label="编辑留言">
+                  <i data-lucide="pencil" class="w-4 h-4"></i>
+                </button>
+                <button class="msg-delete opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant/50 hover:text-error p-1" data-msg="你刚刚发布的留言" aria-label="删除留言">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          </li>
+          <!-- 留言-2 -->
+          <li class="bg-surface rounded-xl shadow-card p-5 sm:p-6 group">
+            <div class="flex items-start gap-3">
+              <span class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-serif text-sm font-bold shrink-0">A</span>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <p class="text-sm font-medium text-on-surface">Aaron</p>
+                  <span class="text-xs text-on-surface-variant/70">1 周前</span>
+                </div>
+                <p class="mt-1.5 text-sm leading-relaxed text-on-surface-variant">卡片盒笔记法那篇写得很清楚，请问后续会写双链笔记工具对比吗？蹲一个。</p>
+              </div>
+              <button class="msg-delete opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant/50 hover:text-error shrink-0" data-msg="Aaron 的留言" aria-label="删除留言">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </li>
+          <!-- 留言-3 -->
+          <li class="bg-surface rounded-xl shadow-card p-5 sm:p-6 group">
+            <div class="flex items-start gap-3">
+              <span class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-serif text-sm font-bold shrink-0">屿</span>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <p class="text-sm font-medium text-on-surface">屿风</p>
+                  <span class="text-xs text-on-surface-variant/70">2 周前</span>
+                </div>
+                <p class="mt-1.5 text-sm leading-relaxed text-on-surface-variant">背景里的「寻找」两个字太妙了，找着找着，花园就长出来了。</p>
+              </div>
+              <button class="msg-delete opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant/50 hover:text-error shrink-0" data-msg="屿风 的留言" aria-label="删除留言">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </li>
+        </ul>
+
+        <!-- 留言空态：无任何留言时显示（开发阶段根据接口返回的空列表切换显隐） -->
+        <div id="msg-empty" class="hidden mt-8 flex-col items-center justify-center text-center bg-surface rounded-xl shadow-card px-6 py-12">
+          <i data-lucide="message-circle-heart" class="w-8 h-8 text-primary/40"></i>
+          <p class="mt-4 text-sm text-on-surface-variant">欢迎留下您宝贵的经验分享~</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 留言操作 Toast（示意：提交成功 / 删除完成） -->
+    <div id="msg-toast" class="fixed bottom-6 right-6 z-50 px-4 py-2.5 rounded-md bg-on-surface text-background text-sm shadow-float transition-all duration-300 opacity-0 translate-y-2 pointer-events-none">留言成功，感谢你的想法！</div>
+
+    <!-- 弹窗 confirm-delete：删除留言确认（站长删除 / 访客 30 分钟内自删共用） -->
+    <div id="modal-confirm-delete" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/40" data-close></div>
+      <div class="relative bg-surface rounded-xl shadow-dialog p-6 w-full max-w-sm">
+        <h3 class="font-serif font-bold text-lg text-on-surface">确认删除</h3>
+        <p class="mt-2 text-sm leading-relaxed text-on-surface-variant">将删除 <span id="delete-target-name" class="text-on-surface font-medium">该留言</span>。删除后将不再展示，记录仍保留在站长后台。</p>
+        <div class="mt-5 flex justify-end gap-2">
+          <button id="btn-cancel-delete" class="px-4 py-2 text-sm rounded-md bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors">取消</button>
+          <button id="btn-confirm-delete" class="px-4 py-2 text-sm rounded-md bg-error text-white hover:bg-error/90 transition-colors">删除</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- @main-content:end -->
+  </main>
+
+  <!-- 页脚：与全站一致的简洁页脚 -->
+  <footer class="border-t border-outline-variant/15">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <i data-lucide="sprout" class="w-3.5 h-3.5 text-primary"></i>
+        <span class="text-xs text-on-surface-variant">© 2025 枫 · NOW IS THE TIME</span>
+      </div>
+      <nav class="flex items-center gap-5" aria-label="页脚导航">
+        <a href="garden.html" class="text-xs text-on-surface-variant hover:text-primary transition-colors">数字花园</a>
+        <a href="about.html" class="text-xs text-on-surface-variant hover:text-primary transition-colors">关于我</a>
+        <a href="home.html" class="text-xs text-on-surface-variant hover:text-primary transition-colors">回到首页</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>lucide.createIcons();</script>
+
+  <script>
+    $(function () {
+      var searchTimer = null;
+      var activeTag = ''; // 当前选中的标签，'' 表示"全部"
+      var ACTIVE_CLS = 'bg-primary text-on-primary';
+      var IDLE_CLS = 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface';
+
+      // 应用筛选：标签 + 搜索关键词叠加过滤卡片（卡片为硬编码 DOM，这里只做显隐）
+      function applyFilter() {
+        var keyword = $.trim($('#search-input').val()).toLowerCase();
+        var visibleCount = 0;
+
+        $('#note-grid .note-card').each(function () {
+          var $card = $(this);
+          var tags = String($card.data('tags') || '');
+          var title = String($card.data('title') || '').toLowerCase();
+          var excerpt = String($card.data('excerpt') || '').toLowerCase();
+          var matchTag = !activeTag || tags.split(' ').indexOf(activeTag) !== -1;
+          var matchSearch = !keyword || title.indexOf(keyword) !== -1 || excerpt.indexOf(keyword) !== -1;
+          var show = matchTag && matchSearch;
+          $card.css('display', show ? '' : 'none');
+          if (show) { visibleCount++; }
+        });
+
+        // 无匹配时展示友好提示，隐藏网格
+        $('#note-grid').css('display', visibleCount === 0 ? 'none' : '');
+        $('#empty-result').css('display', visibleCount === 0 ? 'flex' : 'none');
+
+        // 更新结果计数：有筛选条件时显示"找到"，否则显示"共"
+        var filtered = activeTag !== '' || keyword !== '';
+        $('#result-count').text(filtered ? ('找到 ' + visibleCount + ' 篇笔记') : ('共 ' + visibleCount + ' 篇笔记'));
+      }
+
+      // 设置激活的标签胶囊：高亮当前项，其余恢复普通态
+      function setActiveChip($chip) {
+        $('#tag-cloud .tag-chip').removeClass(ACTIVE_CLS).addClass(IDLE_CLS).attr('aria-pressed', 'false');
+        activeTag = String($chip.data('tag') || '');
+        $chip.removeClass(IDLE_CLS).addClass(ACTIVE_CLS).attr('aria-pressed', 'true');
+      }
+
+      // 标签点击：筛选该标签，再次点击已选标签则取消筛选恢复"全部"（可与搜索叠加）
+      $('#tag-cloud').on('click', '.tag-chip', function () {
+        var $chip = $(this);
+        if (activeTag === String($chip.data('tag') || '')) {
+          setActiveChip($('#chip-all'));
+        } else {
+          setActiveChip($chip);
+        }
+        applyFilter();
+      });
+
+      // 搜索输入：300ms 防抖实时过滤标题与摘要
+      $('#search-input').on('input', function () {
+        $('#btn-clear-search').css('display', $.trim($(this).val()) ? 'block' : 'none');
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(applyFilter, 300);
+      });
+
+      // 清空搜索按钮：一键恢复搜索条件
+      $('#btn-clear-search').on('click', function () {
+        $('#search-input').val('');
+        $(this).css('display', 'none');
+        applyFilter();
+        $('#search-input').trigger('focus');
+      });
+
+      // 空态中的"清除筛选条件"：重置搜索与标签，恢复展示全部笔记
+      $('#btn-reset-filter').on('click', function () {
+        $('#search-input').val('');
+        $('#btn-clear-search').css('display', 'none');
+        setActiveChip($('#chip-all'));
+        applyFilter();
+      });
+
+      // 初始执行一次，校准结果计数
+      applyFilter();
+    });
+
+    /* ============ 留言板交互（原型示意：提交/删除均为前端演示，开发阶段对接数据库与站长登录态） ============ */
+    $(function () {
+      var toastTimer = null;
+      function showToast(text) {
+        $('#msg-toast').text(text).removeClass('opacity-0 translate-y-2');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          $('#msg-toast').addClass('opacity-0 translate-y-2');
+        }, 2200);
+      }
+
+      // 提交留言：校验必填 → Toast 提示 → 清空表单（开发阶段写入 messages 表并刷新列表）
+      $('#msg-submit').on('click', function () {
+        var name = $.trim($('#msg-name').val());
+        var content = $.trim($('#msg-content').val());
+        if (!name) { showToast('请先填写昵称'); $('#msg-name').trigger('focus'); return; }
+        if (!content) { showToast('想说的话还不能为空'); $('#msg-content').trigger('focus'); return; }
+        showToast('留言成功，感谢你的想法！');
+        $('#msg-name').val('');
+        $('#msg-content').val('');
+      });
+
+      // 删除留言（站长删除 / 访客本人 30 分钟内删除共用确认弹窗；开发阶段：站长=硬删除，访客=软删除）
+      var deletingCard = null;
+      $(document).on('click', '.msg-delete', function () {
+        deletingCard = $(this).closest('li');
+        $('#delete-target-name').text($(this).data('msg'));
+        $('#modal-confirm-delete').removeClass('hidden');
+      });
+      $('#btn-cancel-delete').on('click', function () { $('#modal-confirm-delete').addClass('hidden'); });
+      $('#modal-confirm-delete').on('click', '[data-close]', function () { $('#modal-confirm-delete').addClass('hidden'); });
+      $('#btn-confirm-delete').on('click', function () {
+        if (deletingCard) { deletingCard.remove(); }
+        $('#modal-confirm-delete').addClass('hidden');
+        showToast('留言已删除');
+      });
+
+      // 访客编辑自己的留言（30 分钟内）：查看态 ↔ 编辑态切换
+      $(document).on('click', '.msg-edit-btn', function () {
+        var $li = $(this).closest('li');
+        $li.find('.msg-view').addClass('hidden');
+        $li.find('.msg-edit').removeClass('hidden');
+      });
+      $(document).on('click', '.msg-cancel', function () {
+        var $li = $(this).closest('li');
+        $li.find('.msg-edit').addClass('hidden');
+        $li.find('.msg-view').removeClass('hidden');
+      });
+      $(document).on('click', '.msg-save', function () {
+        var $li = $(this).closest('li');
+        var val = $.trim($li.find('.msg-input').val());
+        if (!val) { showToast('内容不能为空'); return; }
+        $li.find('.msg-view').text(val);
+        $li.find('.msg-edit').addClass('hidden');
+        $li.find('.msg-view').removeClass('hidden');
+        showToast('留言已更新');
+      });
+    });
+  </script>
+</body>
+
+</html>

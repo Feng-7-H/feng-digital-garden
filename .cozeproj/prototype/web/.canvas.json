@@ -1,0 +1,68 @@
+{
+  "elements": [
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/home.html"
+      },
+      "title": "首页",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/garden.html"
+      },
+      "title": "数字花园",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/note-detail.html"
+      },
+      "title": "笔记详情",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/about.html"
+      },
+      "title": "关于我",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/admin.html"
+      },
+      "title": "后台管理",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/admin-editor.html"
+      },
+      "title": "笔记编辑器",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/work-detail.html"
+      },
+      "title": "作品详情",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/admin-login.html"
+      },
+      "title": "管理员登录",
+      "size": "web"
+    }
+  ]
+}

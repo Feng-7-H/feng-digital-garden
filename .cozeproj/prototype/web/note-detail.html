@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>笔记详情 · 枫</title>
+
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色（苔藓绿：数字花园的生长与沉淀意象） === */
+      --color-primary:              #3F6B50;
+      --color-primary-container:    #DEEBDD;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面（暖纸白书桌） === */
+      --color-background:                 #FAF9F5;
+      --color-surface-container-lowest:   #FFFFFF;
+      --color-surface:                    #FFFFFF;
+      --color-surface-container:          #F1EFE9;
+      --color-surface-container-high:     #EAE7DF;
+      --color-surface-container-highest:  #E0DCD1;
+      /* === 文字（暖墨黑 / 暖灰） === */
+      --color-on-surface:           #26251F;
+      --color-on-surface-variant:   #6E6A5E;
+      /* === 功能色 === */
+      --color-success:  #22c55e;
+      --color-error:    #ef4444;
+      --color-warning:  #f59e0b;
+      /* === 边框 === */
+      --color-outline:          #8A8577;
+      --color-outline-variant:  #C9C5B8;
+      /* === 圆角 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.25rem;
+      --radius-full: 9999px;
+      /* === 阴影（克制柔和，像纸张的轻微浮起） === */
+      --shadow-card:   0 2px 12px rgba(38,37,31,0.08);
+      --shadow-float:  0 10px 30px rgba(38,37,31,0.12);
+      --shadow-dialog: 0 25px 60px rgba(38,37,31,0.22);
+      /* === 字体：标题衬线（书香气质），正文常规 === */
+      --font-sans: "Noto Sans SC", system-ui, sans-serif;
+      --font-serif: "Noto Serif SC", "Noto Sans SC", serif;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件，不需要的页面则不要复制此段 -->
+  <header class="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-outline-variant/15">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="home.html" class="flex items-baseline gap-3" aria-label="返回首页">
+        <span class="font-serif font-bold text-xl text-on-surface">枫</span>
+        <span class="hidden sm:inline text-[10px] tracking-[0.35em] text-on-surface-variant uppercase">Now is the time</span>
+      </a>
+      <nav class="flex items-center gap-6 sm:gap-8">
+        <a href="home.html" class="text-sm text-on-surface-variant hover:text-on-surface transition-colors">首页</a>
+        <a href="garden.html" aria-current="page" class="text-sm font-semibold text-on-surface transition-colors">数字花园</a>
+        <a href="about.html" class="text-sm text-on-surface-variant hover:text-on-surface transition-colors">关于我</a>
+        <a href="admin.html" class="text-sm text-on-surface-variant hover:text-on-surface transition-colors">后台管理</a>
+      </nav>
+    </div>
+  </header>
+  <!-- @nav:end 导航组件，不需要的页面则不要复制此段 -->
+
+  <main class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-10">
+    <!-- @main-content:start -->
+    <div class="max-w-3xl mx-auto">
+
+      <!-- 返回链接：优先返回上一页，无历史记录时回退到数字花园 -->
+      <a id="btn-back" href="garden.html" class="inline-flex items-center gap-1.5 text-sm text-on-surface-variant hover:text-primary transition-colors">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>返回花园
+      </a>
+
+      <article id="article-root" class="mt-6">
+        <!-- 文章头：标题 + 编辑按钮 + 元信息 -->
+        <header>
+          <div class="flex flex-wrap items-start justify-between gap-4">
+            <h1 class="font-serif text-3xl font-bold text-on-surface leading-snug">卡片盒笔记法：让知识像花园一样自然生长</h1>
+            <a id="btn-edit" href="admin-editor.html?note_id=note-101" title="在后台编辑器中打开这篇笔记"
+               class="shrink-0 inline-flex items-center gap-2 bg-surface-container text-on-surface border-none px-4 py-2 rounded-md text-sm font-medium hover:bg-surface-container-high active:scale-[0.98] transition-all">
+              <i data-lucide="pencil" class="w-3.5 h-3.5"></i>编辑
+            </a>
+          </div>
+          <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-on-surface-variant">
+            <span class="inline-flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5"></i>发布于 2024-05-12</span>
+            <span class="inline-flex items-center gap-1.5"><i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>更新于 2025-06-08</span>
+            <span class="inline-flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5"></i>约 8 分钟读完</span>
+          </div>
+          <hr class="mt-7 border-0 border-t border-outline-variant/20" />
+        </header>
+
+        <!-- 正文区：模拟 Markdown 渲染后的文章（原型示意排版，实际由用户录入并渲染） -->
+        <div id="article-body" class="mt-8 text-[15px] text-on-surface">
+
+          <p class="leading-relaxed">很多人把笔记软件用成了「仓库」：收集、囤积、再也不会打开。这篇笔记想聊另一种可能——把知识当作一座花园来经营：种下、连接、修剪，让它随时间自然生长。</p>
+
+          <h2 class="mt-10 font-serif text-xl font-bold text-on-surface">一、仓库思维，还是花园思维</h2>
+          <p class="mt-4 leading-relaxed">仓库思维的典型症状是：收藏夹里躺着几百篇「稍后阅读」，剪藏的文章从未被翻开，笔记越攒越多，检索却越来越难。信息的堆积并不等于知识的增长——知识是一张关系网，而不是一排文件夹。</p>
+          <p class="mt-3 leading-relaxed">花园思维则完全不同：它坦然承认笔记是「半成品」，需要持续耕作。你定期回到旧笔记，重写、合并、删除、建立链接，让每一条记录都成为土壤里的一颗种子。</p>
+
+          <h2 class="mt-10 font-serif text-xl font-bold text-on-surface">二、卡片盒笔记法的最小工作流</h2>
+          <p class="mt-4 leading-relaxed">卡片盒笔记法（Zettelkasten，德语「卡片盒」）由社会学家卢曼发明，他用这套方法一生写下了 70 多本书。它的核心从来不是工具，而是一条极简的工作流：</p>
+          <!-- 列表-工作流1：随手笔记 -->
+          <ul class="mt-3 space-y-2 list-disc pl-6 marker:text-primary/60 leading-relaxed">
+            <li><strong>随手笔记</strong>：任何时间、任何想法，先记下来，不追求完整；</li>
+            <!-- 列表-工作流2：文献笔记 -->
+            <li><strong>文献笔记</strong>：阅读时用自己的话摘录要点，并注明出处；</li>
+            <!-- 列表-工作流3：永久笔记 -->
+            <li><strong>永久笔记</strong>：每天回看前两类笔记，把有价值的想法写成一张「原子化」的卡片；</li>
+            <!-- 列表-工作流4：建立链接 -->
+            <li><strong>建立链接</strong>：写卡片时问自己——它与哪些旧卡片有关？把链接写进卡片里。</li>
+          </ul>
+
+          <h3 class="mt-7 font-serif text-base font-semibold text-on-surface">1. 随手笔记是种子</h3>
+          <p class="mt-3 leading-relaxed">不要低估碎片想法的价值。地铁上的一个念头、会议中的一次走神，都可能是下一篇文章的起点。随手笔记的意义在于「捕获」，而不在于「整理」——整理是之后的事。</p>
+
+          <h3 class="mt-7 font-serif text-base font-semibold text-on-surface">2. 永久笔记是嫁接</h3>
+          <p class="mt-3 leading-relaxed">永久笔记要求你用自己的语言、面向未来的自己写作：一张卡片只讲清楚一件事，写完就能脱离上下文独立阅读。这一步是从「信息」到「知识」的分水岭。</p>
+
+          <!-- 引用块 -->
+          <blockquote class="mt-6 border-l-4 border-primary/30 bg-surface-container pl-4 pr-4 py-3 rounded-r-md text-on-surface-variant">
+            <p class="leading-relaxed">「笔记的价值不在于你存储了多少，而在于它与其他笔记建立了多少连接——连接越密，想法越容易发芽。」</p>
+            <footer class="mt-2 text-xs">—— 《卡片笔记写作法》读书摘记</footer>
+          </blockquote>
+
+          <h2 class="mt-10 font-serif text-xl font-bold text-on-surface">三、给笔记建立根系：链接与索引</h2>
+          <p class="mt-4 leading-relaxed">在纯文本工作流里，笔记之间的关联通常用双链语法 <code class="bg-surface-container rounded px-1.5 py-0.5 font-mono text-[13px] text-primary">[[wiki 链接]]</code> 表达，元信息则写在 <code class="bg-surface-container rounded px-1.5 py-0.5 font-mono text-[13px] text-primary">front-matter</code> 中。下面是本站一篇笔记常用的 Markdown 片段：</p>
+          <!-- 代码块：示例笔记片段 -->
+          <pre class="mt-5 bg-surface-container rounded-md p-4 font-mono text-sm leading-relaxed overflow-x-auto text-on-surface"><code>---
+title: 卡片盒笔记法
+tags: [知识管理, 写作]
+updated: 2025-06-08
+---
+
+卡片盒的灵感来自 [[数字花园]]：
+两者都反对「一次性整理」，
+强调持续耕作与自然生长。
+
+- 每张卡片只讲一件事
+- 新卡片必须与至少一张旧卡片建立链接
+- 每周固定回访，修剪与合并</code></pre>
+          <p class="mt-4 leading-relaxed">除了双向链接，还可以维护少量「索引卡片」作为主题入口——它们像花园里的小径，带你从任意一张卡片走到整个知识网络。关于标签与索引的取舍，我在<a id="link-garden" href="garden.html?tag=知识管理" class="text-primary underline decoration-primary/40 underline-offset-2 hover:decoration-primary transition-colors">数字花园</a>里另有一篇笔记专门讨论；想追溯卢曼的原始方法，也可以读一读<a id="link-wiki" href="https://zh.wikipedia.org/wiki/Zettelkasten" target="_blank" rel="noopener" class="text-primary underline decoration-primary/40 underline-offset-2 hover:decoration-primary transition-colors">Zettelkasten 的维基百科条目</a>。</p>
+
+          <h2 class="mt-10 font-serif text-xl font-bold text-on-surface">四、每周耕作：让写作成为习惯</h2>
+          <p class="mt-4 leading-relaxed">数字花园不是一次建成的，它靠每周固定的「耕作时间」维持生命力。我的做法很简单：</p>
+          <!-- 列表-耕作习惯1 -->
+          <ul class="mt-3 space-y-2 list-disc pl-6 marker:text-primary/60 leading-relaxed">
+            <li><strong>每周一</strong>：回看上周的随手笔记，决定哪些值得升级成永久笔记；</li>
+            <!-- 列表-耕作习惯2 -->
+            <li><strong>每周三</strong>：挑一张旧卡片重写，或者把两张卡片合并成一篇短文；</li>
+            <!-- 列表-耕作习惯3 -->
+            <li><strong>每周日</strong>：发布一篇小更新——哪怕只有三百字，也让花园持续生长。</li>
+          </ul>
+          <p class="mt-4 leading-relaxed">写作不是输出的终点，而是思考本身。当卡片足够多、链接足够密时，一篇文章往往只是把某条路径上的风景，连起来讲给你听。愿你的花园四季常青。</p>
+        </div>
+
+        <!-- 文章底部：标签胶囊组 -->
+        <div id="tags-area" class="mt-12 pt-6 border-t border-outline-variant/20 flex flex-wrap items-center gap-2">
+          <span class="text-xs text-on-surface-variant mr-1">标签</span>
+          <!-- 标签-1 -->
+          <a id="tag-pill-1" data-tag="卡片盒笔记法" href="garden.html?tag=卡片盒笔记法"
+             class="tag-pill inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary-container text-primary text-xs font-medium hover:opacity-85 transition-opacity">
+            <i data-lucide="hash" class="w-3 h-3"></i>卡片盒笔记法
+          </a>
+          <!-- 标签-2 -->
+          <a id="tag-pill-2" data-tag="知识管理" href="garden.html?tag=知识管理"
+             class="tag-pill inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary-container text-primary text-xs font-medium hover:opacity-85 transition-opacity">
+            <i data-lucide="hash" class="w-3 h-3"></i>知识管理
+          </a>
+          <!-- 标签-3 -->
+          <a id="tag-pill-3" data-tag="写作" href="garden.html?tag=写作"
+             class="tag-pill inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary-container text-primary text-xs font-medium hover:opacity-85 transition-opacity">
+            <i data-lucide="hash" class="w-3 h-3"></i>写作
+          </a>
+        </div>
+      </article>
+
+      <!-- 相关笔记：按共享标签推荐 -->
+      <section id="related-section" class="mt-14">
+        <h2 class="font-serif text-xl font-bold text-on-surface flex items-center gap-2">
+          <i data-lucide="leaf" class="w-5 h-5 text-primary"></i>相关笔记
+          <span class="text-xs font-normal text-on-surface-variant font-sans">按共享标签推荐</span>
+        </h2>
+        <div id="related-list" class="mt-5 grid gap-3">
+          <!-- 相关笔记-卡片1：与本文共享标签「知识管理」 -->
+          <a id="related-card-1" data-id="note-102" href="note-detail.html?note_id=note-102"
+             class="related-card block bg-surface rounded-lg shadow-card p-4 hover:-translate-y-0.5 hover:shadow-float transition-all group">
+            <div class="flex items-start justify-between gap-3">
+              <h3 class="font-serif text-base font-semibold text-on-surface group-hover:text-primary transition-colors">数字花园的四季耕作指南</h3>
+              <i data-lucide="arrow-up-right" class="w-4 h-4 mt-0.5 text-on-surface-variant/40 group-hover:text-primary transition-colors shrink-0"></i>
+            </div>
+            <div class="mt-2.5 flex flex-wrap items-center gap-2 text-xs">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-container text-primary"><i data-lucide="link-2" class="w-3 h-3"></i>共享标签 · 知识管理</span>
+              <span class="text-on-surface-variant">更新于 2025-05-30</span>
+            </div>
+          </a>
+          <!-- 相关笔记-卡片2：与本文共享标签「卡片盒笔记法」 -->
+          <a id="related-card-2" data-id="note-103" href="note-detail.html?note_id=note-103"
+             class="related-card block bg-surface rounded-lg shadow-card p-4 hover:-translate-y-0.5 hover:shadow-float transition-all group">
+            <div class="flex items-start justify-between gap-3">
+              <h3 class="font-serif text-base font-semibold text-on-surface group-hover:text-primary transition-colors">从随手笔记到永久笔记：我的三步升级流程</h3>
+              <i data-lucide="arrow-up-right" class="w-4 h-4 mt-0.5 text-on-surface-variant/40 group-hover:text-primary transition-colors shrink-0"></i>
+            </div>
+            <div class="mt-2.5 flex flex-wrap items-center gap-2 text-xs">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-container text-primary"><i data-lucide="link-2" class="w-3 h-3"></i>共享标签 · 卡片盒笔记法</span>
+              <span class="text-on-surface-variant">更新于 2025-04-18</span>
+            </div>
+          </a>
+          <!-- 相关笔记-卡片3：与本文共享标签「写作」 -->
+          <a id="related-card-3" data-id="note-104" href="note-detail.html?note_id=note-104"
+             class="related-card block bg-surface rounded-lg shadow-card p-4 hover:-translate-y-0.5 hover:shadow-float transition-all group">
+            <div class="flex items-start justify-between gap-3">
+              <h3 class="font-serif text-base font-semibold text-on-surface group-hover:text-primary transition-colors">为什么我坚持用纯文本写作</h3>
+              <i data-lucide="arrow-up-right" class="w-4 h-4 mt-0.5 text-on-surface-variant/40 group-hover:text-primary transition-colors shrink-0"></i>
+            </div>
+            <div class="mt-2.5 flex flex-wrap items-center gap-2 text-xs">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-container text-primary"><i data-lucide="link-2" class="w-3 h-3"></i>共享标签 · 写作</span>
+              <span class="text-on-surface-variant">更新于 2025-03-02</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+    </div>
+    <!-- @main-content:end -->
+  </main>
+
+  <script>
+    $(function () {
+      // 返回按钮：优先返回上一页；无历史记录时回退到数字花园
+      $('#btn-back').on('click', function (e) {
+        e.preventDefault();
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = 'garden.html';
+        }
+      });
+
+      // 编辑按钮：链接默认行为已完成跳转（admin-editor.html?note_id=note-101），此处仅记录
+      $('#btn-edit').on('click', function () {
+        console.log('打开后台编辑器:', $(this).attr('href'));
+      });
+
+      // 标签胶囊：链接默认行为跳转 garden.html?tag=xxx，花园页读取参数激活对应标签筛选
+      $('#tags-area').on('click', '.tag-pill', function () {
+        console.log('跳转花园并筛选标签:', $(this).data('tag'));
+      });
+
+      // 相关笔记卡片：链接默认行为跳转 note-detail.html?note_id=xxx，此处仅记录
+      $('#related-list').on('click', '.related-card', function () {
+        console.log('阅读相关笔记:', $(this).data('id'));
+      });
+    });
+  </script>
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

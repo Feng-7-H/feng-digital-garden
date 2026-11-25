@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色（苔藓绿：数字花园的生长与沉淀意象） === */
+      --color-primary:              #3F6B50;
+      --color-primary-container:    #DEEBDD;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面（暖纸白书桌） === */
+      --color-background:                 #FAF9F5;
+      --color-surface-container-lowest:   #FFFFFF;
+      --color-surface:                    #FFFFFF;
+      --color-surface-container:          #F1EFE9;
+      --color-surface-container-high:     #EAE7DF;
+      --color-surface-container-highest:  #E0DCD1;
+      /* === 文字（暖墨黑 / 暖灰） === */
+      --color-on-surface:           #26251F;
+      --color-on-surface-variant:   #6E6A5E;
+      /* === 功能色 === */
+      --color-success:  #22c55e;
+      --color-error:    #ef4444;
+      --color-warning:  #f59e0b;
+      /* === 边框 === */
+      --color-outline:          #8A8577;
+      --color-outline-variant:  #C9C5B8;
+      /* === 圆角 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.25rem;
+      --radius-full: 9999px;
+      /* === 阴影（克制柔和，像纸张的轻微浮起） === */
+      --shadow-card:   0 2px 12px rgba(38,37,31,0.08);
+      --shadow-float:  0 10px 30px rgba(38,37,31,0.12);
+      --shadow-dialog: 0 25px 60px rgba(38,37,31,0.22);
+      /* === 字体：标题衬线（书香气质），正文常规 === */
+      --font-sans: "Noto Sans SC", system-ui, sans-serif;
+      --font-serif: "Noto Serif SC", "Noto Sans SC", serif;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件，不需要的页面则不要复制此段 -->
+  <header class="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-outline-variant/15">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="home.html" class="flex items-baseline gap-3" aria-label="返回首页">
+        <span class="font-serif font-bold text-xl text-on-surface">枫</span>
+        <span class="hidden sm:inline text-[10px] tracking-[0.35em] text-on-surface-variant uppercase">Now is the time</span>
+      </a>
+      <nav class="flex items-center gap-6 sm:gap-8">
+        <a href="home.html" class="text-sm text-on-surface-variant hover:text-on-surface transition-colors">首页</a>
+        <a href="garden.html" class="text-sm text-on-surface-variant hover:text-on-surface transition-colors">数字花园</a>
+        <a href="about.html" class="text-sm text-on-surface-variant hover:text-on-surface transition-colors">关于我</a>
+        <a href="admin.html" class="text-sm text-on-surface-variant hover:text-on-surface transition-colors">后台管理</a>
+      </nav>
+    </div>
+  </header>
+  <!-- @nav:end 导航组件，不需要的页面则不要复制此段 -->
+
+  <main class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-10">
+    <!-- @main-content:start -->
+    <div class="max-w-4xl mx-auto">
+
+      <!-- 返回行：返回关于我 -->
+      <a href="about.html" id="link-back-about"
+         class="inline-flex items-center gap-1.5 text-sm text-on-surface-variant hover:text-primary transition-colors">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>返回关于我
+      </a>
+
+      <!-- 作品头：标题 / 副标题 / 元信息 / 外链按钮 -->
+      <header class="mt-6">
+        <h1 id="work-title" class="font-serif text-3xl font-bold text-on-surface leading-snug">苔原笔记 · 本地优先的 Markdown 知识库</h1>
+        <p id="work-subtitle" class="mt-3 text-base text-on-surface-variant leading-relaxed">为长期写作者打造的桌面端知识管理工具——让每一个想法都能被安放、被连接、被再次发现。</p>
+        <div id="work-meta" class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3 text-xs text-on-surface-variant">
+          <span class="inline-flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5"></i>2025-08-12 发布</span>
+          <span class="inline-flex items-center gap-1.5"><i data-lucide="tag" class="w-3.5 h-3.5"></i>桌面应用 · 独立开发（产品设计 / 全栈）</span>
+          <a href="https://github.com/feng/tundra-notes" target="_blank" rel="noopener noreferrer" id="btn-visit-project"
+             class="ml-auto inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3.5 py-2 rounded-md text-sm font-medium hover:bg-primary/15 active:scale-[0.98] transition-all">
+            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>访问项目
+          </a>
+        </div>
+      </header>
+
+      <!-- 封面大图（点击可查看大图） -->
+      <img id="img-cover"
+           src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1600&q=80"
+           alt="苔原笔记应用界面原型展示" data-category="商业科技"
+           class="mt-8 w-full rounded-xl shadow-card cursor-zoom-in select-none" />
+
+      <!-- 项目正文：模拟富文本渲染效果（内容由博主后台录入，访客只读） -->
+      <article id="work-article" class="mt-10">
+        <h2 class="font-serif text-xl font-bold text-on-surface mb-3">起因：为「长期写作」做减法</h2>
+        <p class="text-sm leading-7 text-on-surface">过去三年，我的笔记散落在五六个工具之间——云端笔记、本地文件夹、手机备忘录各存一份，每次换工具都要迁移一次数据，写作的兴致也在一次次搬运中被消磨殆尽。我想要一个真正属于自己的「一亩三分地」：文件是纯 Markdown，数据始终在本地，检索必须足够快。</p>
+        <p class="mt-3 text-sm leading-7 text-on-surface">于是有了「苔原笔记」。名字取自苔原生态：表面上安静克制，土地之下却一直在缓慢而顽强地生长——这也正是长期写作本来的样子。</p>
+
+        <h2 class="font-serif text-xl font-bold text-on-surface mt-10 mb-3">功能亮点</h2>
+        <ul class="list-disc pl-5 space-y-2 text-sm leading-7 text-on-surface marker:text-primary/70">
+          <!-- 功能亮点 1 -->
+          <li><strong class="font-semibold">本地优先：</strong>笔记以纯 Markdown 文件存储在本地目录，随时可用任何编辑器打开，不做数据绑架；</li>
+          <!-- 功能亮点 2 -->
+          <li><strong class="font-semibold">双向链接：</strong>输入 <code class="px-1 py-0.5 rounded-sm bg-surface-container text-xs">[[</code> 即可引用其他笔记，右侧反向链接面板自动汇总引用关系，让想法彼此串联；</li>
+          <!-- 功能亮点 3 -->
+          <li><strong class="font-semibold">标签网络：</strong>标签自动聚合为可缩放的关系图谱，从任意一篇笔记出发，都能长出一片相关主题；</li>
+          <!-- 功能亮点 4 -->
+          <li><strong class="font-semibold">毫秒级检索：</strong>基于 SQLite FTS5 的全文搜索，千篇笔记内定位关键词不超过 50 毫秒；</li>
+          <!-- 功能亮点 5 -->
+          <li><strong class="font-semibold">离线可用：</strong>基于 Tauri 打包为原生应用，安装包不足 10MB，没有网络也能完整写作。</li>
+        </ul>
+
+        <h2 class="font-serif text-xl font-bold text-on-surface mt-10 mb-3">设计与迭代</h2>
+        <p class="text-sm leading-7 text-on-surface">界面沿用本站「素雅纸感」的审美：暖纸白底色、衬线标题、苔藓绿作为唯一的点缀色。前两版把工具栏铺满了整个屏幕，第三版忍痛砍掉一半按钮，只留下「新建、搜索、标签」三个入口——写作不该被按钮打扰。</p>
+        <figure class="mt-6">
+          <!-- 正文插图（点击可查看大图） -->
+          <img id="img-figure"
+               src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80"
+               alt="写作时的书桌与笔记本电脑" data-category="商业科技"
+               class="w-full rounded-xl shadow-card cursor-zoom-in select-none" />
+          <figcaption class="mt-2 text-xs text-on-surface-variant text-center">图 1：第三版界面原型——编辑区占据约 80% 视口，工具栏收纳至顶栏一行</figcaption>
+        </figure>
+        <p class="mt-5 text-sm leading-7 text-on-surface">目前苔原笔记仍在每周迭代，已陪伴 200 余位内测用户写完各自的第一份长稿。欢迎在仓库提 Issue 反馈问题，也欢迎写信告诉我你的写作习惯——下一版的功能清单，由使用它的人决定。</p>
+
+        <h2 class="font-serif text-xl font-bold text-on-surface mt-10 mb-4">技术栈</h2>
+        <div id="work-tech-stack" class="flex flex-wrap gap-2">
+          <!-- 技术栈标签 1 -->
+          <span class="px-3 py-1 rounded-full text-xs bg-surface-container text-on-surface-variant">React 18</span>
+          <!-- 技术栈标签 2 -->
+          <span class="px-3 py-1 rounded-full text-xs bg-surface-container text-on-surface-variant">TypeScript</span>
+          <!-- 技术栈标签 3 -->
+          <span class="px-3 py-1 rounded-full text-xs bg-surface-container text-on-surface-variant">Tauri 2</span>
+          <!-- 技术栈标签 4 -->
+          <span class="px-3 py-1 rounded-full text-xs bg-surface-container text-on-surface-variant">SQLite FTS5</span>
+          <!-- 技术栈标签 5 -->
+          <span class="px-3 py-1 rounded-full text-xs bg-surface-container text-on-surface-variant">Vite</span>
+          <!-- 技术栈标签 6 -->
+          <span class="px-3 py-1 rounded-full text-xs bg-surface-container text-on-surface-variant">Tailwind CSS</span>
+          <!-- 技术栈标签 7 -->
+          <span class="px-3 py-1 rounded-full text-xs bg-surface-container text-on-surface-variant">XState</span>
+          <!-- 技术栈标签 8 -->
+          <span class="px-3 py-1 rounded-full text-xs bg-surface-container text-on-surface-variant">Vitest</span>
+        </div>
+      </article>
+
+      <!-- 底部导航：上一篇 / 下一篇 / 查看更多作品 -->
+      <nav id="work-bottom-nav" class="mt-14 border-t border-outline-variant/15 pt-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <!-- 上一篇 -->
+          <a href="work-detail.html?id=greenhouse-iot" id="link-prev-work"
+             class="group inline-flex items-center gap-2.5 text-sm text-on-surface-variant hover:text-primary transition-colors">
+            <i data-lucide="arrow-left" class="w-4 h-4 shrink-0"></i>
+            <span class="text-left">
+              <span class="block text-xs text-on-surface-variant/70">上一篇</span>
+              <span class="font-medium text-on-surface group-hover:text-primary transition-colors">绿洲温室 · IoT 环境监测系统</span>
+            </span>
+          </a>
+          <!-- 下一篇 -->
+          <a href="work-detail.html?id=pomodoro-timer" id="link-next-work"
+             class="group inline-flex items-center gap-2.5 text-sm text-on-surface-variant hover:text-primary transition-colors sm:flex-row-reverse sm:text-right">
+            <i data-lucide="arrow-right" class="w-4 h-4 shrink-0"></i>
+            <span>
+              <span class="block text-xs text-on-surface-variant/70">下一篇</span>
+              <span class="font-medium text-on-surface group-hover:text-primary transition-colors">拾光番茄钟 · 极简专注小工具</span>
+            </span>
+          </a>
+        </div>
+        <div class="mt-6 text-center">
+          <a href="about.html" id="link-more-works"
+             class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
+            查看更多作品<i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+      </nav>
+
+    </div>
+    <!-- @main-content:end -->
+  </main>
+
+  <!-- 页脚（与全站一致：社交图标 + 版权） -->
+  <footer class="border-t border-outline-variant/15">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8 flex flex-col items-center gap-4">
+      <div class="flex items-center gap-5">
+        <!-- 社交图标：GitHub 外链 -->
+        <a id="social-github" href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub"
+           class="text-on-surface-variant hover:text-primary transition-colors">
+          <i data-lucide="github" class="w-5 h-5"></i>
+        </a>
+        <!-- 社交图标：邮箱 mailto -->
+        <a id="social-email" href="mailto:hi@feng.blog" aria-label="邮箱"
+           class="text-on-surface-variant hover:text-primary transition-colors">
+          <i data-lucide="mail" class="w-5 h-5"></i>
+        </a>
+        <!-- 社交图标：RSS（地址由博主在后台配置） -->
+        <button id="social-rss" type="button" aria-label="RSS 订阅"
+                class="text-on-surface-variant hover:text-primary transition-colors">
+          <i data-lucide="rss" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <p class="text-xs text-on-surface-variant tracking-wide">© 2025 枫 · NOW IS THE TIME</p>
+    </div>
+  </footer>
+
+  <!-- 图片查看器（Lightbox） -->
+  <div id="lightbox" class="fixed inset-0 z-50 bg-black/70 hidden items-center justify-center p-6" role="dialog" aria-label="查看大图">
+    <button id="btn-lightbox-close" type="button" aria-label="关闭大图"
+            class="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors">
+      <i data-lucide="x" class="w-4 h-4"></i>
+    </button>
+    <img id="img-lightbox" src="" alt="作品图片大图预览" data-category="商业科技" class="max-h-[85vh] max-w-full rounded-lg shadow-dialog" />
+  </div>
+
+  <script>
+    $(function () {
+      // 访问项目外链：正式环境由后台 works.link 配置跳转地址，此处为示意仓库
+      $('#btn-visit-project').on('click', function () {
+        console.log('打开作品外链（由博主在后台配置）:', $(this).attr('href'));
+      });
+
+      // RSS 订阅：需要调用第三方接口获取订阅地址（由博主在后台配置）
+      $('#social-rss').on('click', function () {
+        console.log('需要调用第三方接口获取 RSS 订阅地址（由博主在后台配置）');
+      });
+
+      // Lightbox：点击封面 / 正文插图查看大图
+      var $lightbox = $('#lightbox');
+      function openLightbox(src, alt) {
+        $('#img-lightbox').attr({ src: src, alt: alt });
+        $lightbox.removeClass('hidden').addClass('flex');
+      }
+      function closeLightbox() {
+        $lightbox.addClass('hidden').removeClass('flex');
+        $('#img-lightbox').attr('src', '');
+      }
+      $('#img-cover, #img-figure').on('click', function () {
+        openLightbox($(this).attr('src'), $(this).attr('alt'));
+      });
+      $('#btn-lightbox-close').on('click', closeLightbox);
+      // 点击遮罩空白处关闭（点击图片本身不关闭）
+      $lightbox.on('click', function (e) {
+        if (e.target === this) closeLightbox();
+      });
+      // 按 ESC 关闭
+      $(document).on('keydown', function (e) {
+        if (e.key === 'Escape') closeLightbox();
+      });
+    });
+  </script>
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>
